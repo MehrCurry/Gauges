@@ -116,8 +116,9 @@ function init() {
 	var hostname = window.location.hostname;
 	if (hostname=="")
 		hostname="localhost";
-	var url = "ws://" + hostname + ":61614/stomp";
-	var client = Stomp.client(url);
+	// var url = "ws://" + hostname + ":61614/stomp";
+	var url = "ws://" + hostname + ":1616/solarmon";
+	//var client = Stomp.client(url);
 	var login = "";
 	var passcode = "";
 
@@ -128,17 +129,16 @@ function init() {
 		};
 
 		connect_callback = function() {
-			id = client.subscribe("/topic/observationsWeb", callback);
+			// id = client.subscribe("/topic/observationsWeb", callback);
 			led1.setLedOnOff(true);
 		};
 
-		client.connect(login, passcode, connect_callback, error_callback);
-
+		// client.connect(login, passcode, connect_callback, error_callback);
 		callback = function(message) {
 			// called when the client receives a Stomp message from the server
-			if (message.body) {
+			if (message.data) {
 				// alert("got message with body " + message.body);
-				var data = message.body;
+				var data = message.data;
 				var payload = jQuery.parseJSON(data);
 				if (payload["de.gzockoll.measurement.InstrumentConfiguration"] != undefined) {
 					configureInstrument(payload["de.gzockoll.measurement.InstrumentConfiguration"]);
@@ -150,6 +150,10 @@ function init() {
 				// display.setText("got empty message")
 			}
 		};
+		
+		var client = new WebSocket(url);
+		client.onmessage=callback;
+		client.onopen=connect_callback;
 	}
 
 	catch (e) {
@@ -157,14 +161,6 @@ function init() {
 		alert("Fehler: " + e);
 
 	}
-
-	finally {
-		// client.disconnect(function() {
-		// alert("See you next time!");
-		// });
-		radial2.setValueAnimated(70);
-	}
-
 }
 
 function setValue(measurement) {
