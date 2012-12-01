@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8" />
-    <title>Gauges</title>
+<meta charset="utf-8" />
+<title>Gauges</title>
 
-    <script type='text/javascript' src='js/jquery-1.7.1.min.js'></script>
-    <script type='text/javascript' src='js/tween.js'></script>
-    <script type='text/javascript' src='js/steelseries.js'></script>
-    <script type='text/javascript' src='js/stomp.js'></script>
-    <script type='text/javascript' src='js/init.js'></script>
-
+<script type='text/javascript' src='js/jquery-1.7.1.min.js'></script>
+<script type='text/javascript' src='js/tween.js'></script>
+<script type='text/javascript' src='js/steelseries.js'></script>
+<script type='text/javascript' src='js/init.js'></script>
 <head>
 </head>
 <body onload="init()">
-    <a href="#" onClick="resetAllMinMax();return false">Reset Min/Max</a>
-    <br/>
+	<input type="button" value="Reset Min/Max" onClick="resetAllMinMax();return false" />
+	<div id="leds" ></div>
+	<div id="wrapper">
+		<div id="radials" ></div>
+		<div id="bars" ></div>
+	</div>
 </body>
 </html>

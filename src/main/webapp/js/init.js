@@ -21,23 +21,41 @@ String.prototype.endsWith = function(str) {
 	return (this.match(str + "$") == str)
 }
 
-function init() {
+function initLED(parent) {
 	for ( var item = 1; item <= 8; item++) {
 		var canv = document.createElement("canvas");
 		canv.setAttribute('width', 20);
 		canv.setAttribute('height', 20);
 
 		canv.setAttribute('id', 'led' + item);
-		document.body.appendChild(canv);
+		parent.appendChild(canv);
 	}
-	var br = document.createElement("br");
-	document.body.appendChild(br);
+	led1 = new steelseries.Led('led1', {
+		ledColor : steelseries.LedColor.RED_LED
+	});
 
+	led2 = new steelseries.Led('led2', {
+		ledColor : steelseries.LedColor.YELLOW_LED
+	});
+
+	led3 = new steelseries.Led('led3', {
+		ledColor : steelseries.LedColor.GREEN_LED
+	});
+	led4 = new steelseries.Led('led4', {
+		ledColor : steelseries.LedColor.BLUE_LED
+	});
+
+	led5 = new steelseries.Led('led5', {
+		ledColor : steelseries.LedColor.ORANGE_LED
+	});
+}
+
+function initRadials(parent) {
 	var table = document.createElement("table");
-	document.body.appendChild(table);
+	parent.appendChild(table);
 	var row;
 
-	for ( var item = 0; item < 32; item++) {
+	for ( var item = 0; item < 40; item++) {
 		if ((item % 8) == 0) {
 			row = document.createElement("tr");
 			table.appendChild(row);
@@ -64,9 +82,14 @@ function init() {
 		});
 		dashboard[id] = radial;
 	}
+}
 
-	for ( var item = 0; item < 8; item++) {
-		if ((item % 4) == 0) {
+function initBars(parent) {
+	var table = document.createElement("table");
+	parent.appendChild(table);
+	var row;
+	for ( var item = 0; item < 20; item++) {
+		if ((item % 5) == 0) {
 			row = document.createElement("tr");
 			table.appendChild(row);
 		}
@@ -80,9 +103,9 @@ function init() {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		var bar = new steelseries.LinearBargraph(id, {
-			width : 400,
-			height : 140,
+		var bar = new steelseries.Linear(id, {
+			width : 140,
+			height : 400,
 			maxValue : 100,
 			threshold : 100,
 			thresholdVisible : false,
@@ -93,81 +116,69 @@ function init() {
 		});
 		dashboard[id] = bar;
 	}
+}
 
-	var led1 = new steelseries.Led('led1', {
-		ledColor : steelseries.LedColor.RED_LED
-	});
-
-	var led2 = new steelseries.Led('led2', {
-		ledColor : steelseries.LedColor.YELLOW_LED
-	});
-
-	var led3 = new steelseries.Led('led3', {
-		ledColor : steelseries.LedColor.GREEN_LED
-	});
-	var led4 = new steelseries.Led('led4', {
-		ledColor : steelseries.LedColor.BLUE_LED
-	});
-
-	var led5 = new steelseries.Led('led5', {
-		ledColor : steelseries.LedColor.ORANGE_LED
-	});
-
+function connect() {
+	led1.blink(true);
+	led1.setLedOnOff(true);
 	var hostname = window.location.hostname;
-	if (hostname=="")
-		hostname="localhost";
-	var url = "ws://" + hostname + ":61614/stomp";
-	var client = Stomp.client(url);
+	if (hostname == "")
+		hostname = "localhost";
+	// var url = "ws://" + hostname + ":61614/stomp";
+	var url = "ws://" + hostname + ":1616/solarmon";
+	// var client = Stomp.client(url);
 	var login = "";
 	var passcode = "";
 
 	try {
 		error_callback = function(error) {
-			// display the error's message header:
+			led1.setLedOnOff(false);
 			alert(error.headers.message);
 		};
 
 		connect_callback = function() {
-			id = client.subscribe("/topic/observationsWeb", callback);
+			led1.blink(false);
 			led1.setLedOnOff(true);
 		};
 
-		client.connect(login, passcode, connect_callback, error_callback);
+		close_callback = function() {
+			led1.setLedOnOff(false);
+			setTimeout(connect, 5000);
+		}
 
-		callback = function(message) {
-			// called when the client receives a Stomp message from the server
-			if (message.body) {
-				// alert("got message with body " + message.body);
-				var data = message.body;
-				var payload = jQuery.parseJSON(data);
-				if (payload["de.gzockoll.measurement.InstrumentConfiguration"] != undefined) {
-					configureInstrument(payload["de.gzockoll.measurement.InstrumentConfiguration"]);
-				}
-				if (payload["de.gzockoll.observation.Measurement"] != undefined) {
-					setValue(payload["de.gzockoll.observation.Measurement"]);
-				}
-			} else {
-				// display.setText("got empty message")
-			}
-		};
+		var client = new WebSocket(url);
+		client.onmessage = onMessage;
+		client.onopen = connect_callback;
+		client.onclose = close_callback;
+		client.onerror = error_callback;
 	}
 
 	catch (e) {
-
 		alert("Fehler: " + e);
-
 	}
-
-	finally {
-		// client.disconnect(function() {
-		// alert("See you next time!");
-		// });
-		radial2.setValueAnimated(70);
-	}
-
 }
 
+function onMessage(message) {
+	led2.setLedOnOff(true);
+	setTimeout(	function() {led2.setLedOnOff(false);},500);
+	// called when the client receives a Stomp message from the server
+	if (message.data) {
+		// alert("got message with body " + message.body);
+		var data = message.data;
+		var payload = jQuery.parseJSON(data);
+		if (payload["de.gzockoll.measurement.InstrumentConfiguration"] != undefined) {
+			configureInstrument(payload["de.gzockoll.measurement.InstrumentConfiguration"]);
+		}
+		if (payload["de.gzockoll.observation.Measurement"] != undefined) {
+			setValue(payload["de.gzockoll.observation.Measurement"]);
+		}
+	} else {
+		// display.setText("got empty message")
+	}
+};
 function setValue(measurement) {
+	led3.setLedOnOff(true);
+	setTimeout(	function() {led3.setLedOnOff(false);},500);
 	var key = measurement.subject.name + "." + measurement.type.$;
 	var value = parseFloat(measurement.quantity.value.$);
 	instrument = dashboard[instrumentMapping[key]];
@@ -189,8 +200,10 @@ function resetAllMinMax() {
 }
 
 function configureInstrument(config) {
+	led4.setLedOnOff(true);
+	setTimeout(	function() {led4.setLedOnOff(false);},500);
 	try {
-		instrumentMapping[config.name]=config.instrumentKey;
+		instrumentMapping[config.name] = config.instrumentKey;
 		instrument = dashboard[instrumentMapping[config.name]];
 		if (instrument != null) {
 			if (config.title != null)
@@ -231,4 +244,11 @@ function convertToSection(ranges) {
 
 function configureAreas(instrument, ranges) {
 
+}
+
+function init() {
+	initLED(document.getElementById('leds'));
+	initRadials(document.getElementById('radials'));
+	initBars(document.getElementById('bars'));
+	connect();
 }
