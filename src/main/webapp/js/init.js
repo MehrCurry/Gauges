@@ -55,8 +55,8 @@ function initRadials(parent) {
 	parent.appendChild(table);
 	var row;
 
-	for ( var item = 0; item < 40; item++) {
-		if ((item % 8) == 0) {
+	for ( var item = 0; item < 30; item++) {
+		if ((item % 5) == 0) {
 			row = document.createElement("tr");
 			table.appendChild(row);
 		}
@@ -71,7 +71,6 @@ function initRadials(parent) {
 		row.appendChild(td);
 		var radial = new steelseries.Radial(id, {
 			maxValue : 100,
-			threshold : 100,
 			thresholdVisible : false,
 			frameDesign : defaultDesign,
 			backgroundColor : defaultBackgroundColor,
@@ -88,7 +87,7 @@ function initBars(parent) {
 	var table = document.createElement("table");
 	parent.appendChild(table);
 	var row;
-	for ( var item = 0; item < 20; item++) {
+	for ( var item = 0; item < 15; item++) {
 		if ((item % 5) == 0) {
 			row = document.createElement("tr");
 			table.appendChild(row);
@@ -107,12 +106,7 @@ function initBars(parent) {
 			width : 140,
 			height : 400,
 			maxValue : 100,
-			threshold : 100,
-			thresholdVisible : false,
-			frameDesign : defaultDesign,
-			backgroundColor : defaultBackgroundColor,
-			lcdColor : defaultLcdColor,
-			ledColor : defaultLedColor,
+			thresholdVisible : false
 		});
 		dashboard[id] = bar;
 	}
@@ -124,9 +118,7 @@ function connect() {
 	var hostname = window.location.hostname;
 	if (hostname == "")
 		hostname = "localhost";
-	// var url = "ws://" + hostname + ":61614/stomp";
-	var url = "ws://" + hostname + ":1616/solarmon";
-	// var client = Stomp.client(url);
+	var url = "ws://" + hostname + ":1616/monitoring";
 	var login = "";
 	var passcode = "";
 
@@ -160,7 +152,9 @@ function connect() {
 
 function onMessage(message) {
 	led2.setLedOnOff(true);
-	setTimeout(	function() {led2.setLedOnOff(false);},500);
+	setTimeout(function() {
+		led2.setLedOnOff(false);
+	}, 500);
 	// called when the client receives a Stomp message from the server
 	if (message.data) {
 		// alert("got message with body " + message.body);
@@ -178,7 +172,9 @@ function onMessage(message) {
 };
 function setValue(measurement) {
 	led3.setLedOnOff(true);
-	setTimeout(	function() {led3.setLedOnOff(false);},500);
+	setTimeout(function() {
+		led3.setLedOnOff(false);
+	}, 500);
 	var key = measurement.subject.name + "." + measurement.type.$;
 	var value = parseFloat(measurement.quantity.value.$);
 	instrument = dashboard[instrumentMapping[key]];
@@ -196,35 +192,37 @@ function resetMinMax(gauge) {
 }
 
 function resetAllMinMax() {
+	for(var key in dashboard)
+		resetMinMax(dashboard[key])
 	return false;
 }
 
 function configureInstrument(config) {
 	led4.setLedOnOff(true);
-	setTimeout(	function() {led4.setLedOnOff(false);},500);
+	setTimeout(function() {
+		led4.setLedOnOff(false);
+	}, 2000);
 	try {
 		instrumentMapping[config.name] = config.instrumentKey;
-		instrument = dashboard[instrumentMapping[config.name]];
+		instrument = dashboard[config.instrumentKey];
 		if (instrument != null) {
 			if (config.title != null)
 				instrument.setTitleString(config.title);
 			if (config.unit != null)
 				instrument.setUnitString(config.unit);
 			if (config.max != undefined)
-				instrument.setMaxValue(config.max.$);
+				instrument.setMaxValue(config.max);
 			if (config.min != undefined)
-				instrument.setMinValue(config.min.$);
+				instrument.setMinValue(config.min);
 			if (config.threshold != undefined)
-				instrument.setThreshold(config.threshold.$);
-			if (config.areas != "")
-				instrument
-						.setArea(convertToSection(config.areas["de.gzockoll.measurement.ColoredRange"]));
-			if (config.sections != "")
-				instrument
-						.setSection(convertToSection(config.sections["de.gzockoll.measurement.ColoredRange"]));
+				instrument.setThreshold(config.threshold);
+			if (config.areas != undefined)
+				instrument.setArea(convertToSection(config.areas));
+			if (config.sections != undefined)
+				instrument.setSection(convertToSection(config.sections));
 		}
 	} catch (e) {
-		// alert("Fehler: " + e);
+		alert("Fehler: " + e);
 	}
 }
 
@@ -232,10 +230,7 @@ function convertToSection(ranges) {
 	var areas = Array();
 	for ( var i = 0; i < ranges.length; i++) {
 		var a = ranges[i];
-		var section = new steelseries.Section(parseInt(a.range.start.$),
-				parseInt(a.range.end.$), "rgba({0},{1},{2},{3})".format(
-						a.rgba.red, a.rgba.green, a.rgba.blue,
-						a.rgba.alpha / 256.0))
+		var section = new steelseries.Section(a.start, a.end, a.color)
 		areas.push(section);
 	}
 	return areas;
@@ -250,5 +245,7 @@ function init() {
 	initLED(document.getElementById('leds'));
 	initRadials(document.getElementById('radials'));
 	initBars(document.getElementById('bars'));
+	for ( var i = 0; i < configurations.length; i++)
+		configureInstrument(configurations[i]);
 	connect();
 }

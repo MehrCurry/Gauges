@@ -4,15 +4,18 @@
 <meta charset="utf-8" />
 <title>Gauges</title>
 
-<script type='text/javascript' src='js/jquery-1.7.1.min.js'></script>
+<script type='text/javascript' src='js/jquery-1.8.3.min.js'></script>
 <script type='text/javascript' src='js/tween.js'></script>
 <script type='text/javascript' src='js/steelseries.js'></script>
 <script type='text/javascript' src='js/init.js'></script>
+<script type="text/javascript" src="js/config.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/layout.css" />
 <head>
 </head>
 <body onload="init()">
-	<input type="button" value="Reset Min/Max" onClick="resetAllMinMax();return false" />
-	<div id="leds" ></div>
+	<div id="leds" >
+	<input type="button" value="Reset Min/Max" onClick="resetAllMinMax();return false" style="padding:4px 38px;" />	
+	</div>
 	<div id="wrapper">
 		<div id="radials" ></div>
 		<div id="bars" ></div>
