@@ -50,6 +50,35 @@ function initLED(parent) {
 	});
 }
 
+function initDisplays(parent) {
+	var table = document.createElement("table");
+	parent.appendChild(table);
+	var row;
+
+	for ( var item = 0; item < 6; item++) {
+		if ((item % 6) == 0) {
+			row = document.createElement("tr");
+			table.appendChild(row);
+		}
+		var canv = document.createElement("canvas");
+		var td = document.createElement("td");
+		canv.setAttribute('width', 200);
+		canv.setAttribute('height', 100);
+
+		var id = 'display' + item;
+		canv.setAttribute('id', id);
+		td.appendChild(canv);
+		row.appendChild(td);
+		var displaySingle = new steelseries.DisplaySingle(id, {
+            width: 164,
+            unitStringVisible: true,
+            valuesNumeric: true,
+            digitalFont: true
+            });
+		dashboard[id] = displaySingle;
+	}
+}
+
 function initRadials(parent) {
 	var table = document.createElement("table");
 	parent.appendChild(table);
@@ -243,6 +272,7 @@ function configureAreas(instrument, ranges) {
 
 function init() {
 	initLED(document.getElementById('leds'));
+	// initDisplays(document.getElementById('displays'));
 	initRadials(document.getElementById('radials'));
 	initBars(document.getElementById('bars'));
 	for ( var i = 0; i < configurations.length; i++)
