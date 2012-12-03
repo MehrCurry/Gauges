@@ -70,11 +70,11 @@ function initDisplays(parent) {
 		td.appendChild(canv);
 		row.appendChild(td);
 		var displaySingle = new steelseries.DisplaySingle(id, {
-            width: 164,
-            unitStringVisible: true,
-            valuesNumeric: true,
-            digitalFont: true
-            });
+			width : 164,
+			unitStringVisible : true,
+			valuesNumeric : true,
+			digitalFont : true
+		});
 		dashboard[id] = displaySingle;
 	}
 }
@@ -116,8 +116,8 @@ function initBars(parent) {
 	var table = document.createElement("table");
 	parent.appendChild(table);
 	var row;
-	for ( var item = 0; item < 15; item++) {
-		if ((item % 5) == 0) {
+	for ( var item = 0; item < 6; item++) {
+		if ((item % 2) == 0) {
 			row = document.createElement("tr");
 			table.appendChild(row);
 		}
@@ -164,7 +164,7 @@ function connect() {
 
 		close_callback = function() {
 			led1.setLedOnOff(false);
-			setTimeout(connect, 5000);
+			setTimeout(connect, 2000);
 		}
 
 		var client = new WebSocket(url);
@@ -184,28 +184,23 @@ function onMessage(message) {
 	setTimeout(function() {
 		led2.setLedOnOff(false);
 	}, 500);
-	// called when the client receives a Stomp message from the server
+	className = "de.gzockoll.monitoring.camel.SimpleMeasurement";
 	if (message.data) {
-		// alert("got message with body " + message.body);
 		var data = message.data;
 		var payload = jQuery.parseJSON(data);
-		if (payload["de.gzockoll.measurement.InstrumentConfiguration"] != undefined) {
-			configureInstrument(payload["de.gzockoll.measurement.InstrumentConfiguration"]);
+		if (payload[className] != undefined) {
+			setValue(payload[className]);
 		}
-		if (payload["de.gzockoll.observation.Measurement"] != undefined) {
-			setValue(payload["de.gzockoll.observation.Measurement"]);
-		}
-	} else {
-		// display.setText("got empty message")
 	}
 };
+
 function setValue(measurement) {
 	led3.setLedOnOff(true);
 	setTimeout(function() {
 		led3.setLedOnOff(false);
 	}, 500);
-	var key = measurement.subject.name + "." + measurement.type.$;
-	var value = parseFloat(measurement.quantity.value.$);
+	var key = measurement.name;
+	var value = parseFloat(measurement.value.$);
 	instrument = dashboard[instrumentMapping[key]];
 	if (instrument != undefined && value != undefined && !isNaN(value)) {
 		instrument.setValueAnimated(value);
@@ -221,7 +216,7 @@ function resetMinMax(gauge) {
 }
 
 function resetAllMinMax() {
-	for(var key in dashboard)
+	for ( var key in dashboard)
 		resetMinMax(dashboard[key])
 	return false;
 }
@@ -263,10 +258,6 @@ function convertToSection(ranges) {
 		areas.push(section);
 	}
 	return areas;
-
-}
-
-function configureAreas(instrument, ranges) {
 
 }
 
