@@ -142,7 +142,6 @@ function initBars(parent) {
 }
 
 function connect() {
-	led1.blink(true);
 	led1.setLedOnOff(true);
 	var hostname = window.location.hostname;
 	if (hostname == "")
@@ -158,7 +157,6 @@ function connect() {
 		};
 
 		connect_callback = function() {
-			led1.blink(false);
 			led1.setLedOnOff(true);
 		};
 
@@ -203,6 +201,10 @@ function setValue(measurement) {
 	var value = parseFloat(measurement.value.$);
 	instrument = dashboard[instrumentMapping[key]];
 	if (instrument != undefined && value != undefined && !isNaN(value)) {
+		led4.setLedOnOff(true);
+		setTimeout(function() {
+			led4.setLedOnOff(false);
+		}, 500);
 		instrument.setValueAnimated(value);
 	} else {
 		console.log(value + " not a number");
@@ -222,9 +224,9 @@ function resetAllMinMax() {
 }
 
 function configureInstrument(config) {
-	led4.setLedOnOff(true);
+	led5.setLedOnOff(true);
 	setTimeout(function() {
-		led4.setLedOnOff(false);
+		led5.setLedOnOff(false);
 	}, 2000);
 	try {
 		instrumentMapping[config.name] = config.instrumentKey;
