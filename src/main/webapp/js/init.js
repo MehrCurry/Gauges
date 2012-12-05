@@ -69,12 +69,9 @@ function initDisplays(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		var displaySingle = new steelseries.DisplaySingle(id, {
-			width : 164,
-			unitStringVisible : true,
-			valuesNumeric : true,
-			digitalFont : true
-		});
+		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
+		var displaySingle = new steelseries.DisplaySingle(id, config);
+		config.instrument=displaySingle;
 		dashboard[id] = displaySingle;
 	}
 }
@@ -98,17 +95,14 @@ function initRadials(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		var radial = new steelseries.Radial(id, {
-			maxValue : 100,
-			thresholdVisible : false,
-			frameDesign : defaultDesign,
-			backgroundColor : defaultBackgroundColor,
-			lcdColor : defaultLcdColor,
-			ledColor : defaultLedColor,
-			knobType : defaultKnobType,
-			knobStyle : defaultKnobStyle
-		});
-		dashboard[id] = radial;
+		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
+		var instrument = new steelseries.Radial(id, config.parameter);
+		if (config.areas != undefined)
+			instrument.setArea(convertToSection(config.areas));
+		if (config.sections != undefined)
+			instrument.setSection(convertToSection(config.sections));
+		config.instrument=instrument;
+		dashboard[id] = instrument;
 	}
 }
 
@@ -131,13 +125,10 @@ function initBars(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		var bar = new steelseries.Linear(id, {
-			width : 140,
-			height : 400,
-			maxValue : 100,
-			thresholdVisible : false
-		});
-		dashboard[id] = bar;
+		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
+		var instrument = new steelseries.Linear(id, config);
+		config.instrument=instrument;
+		dashboard[id] = instrument;
 	}
 }
 
@@ -178,10 +169,7 @@ function connect() {
 }
 
 function onMessage(message) {
-	led2.setLedOnOff(true);
-	setTimeout(function() {
-		led2.setLedOnOff(false);
-	}, 500);
+	trigger(led2);
 	className = "de.gzockoll.monitoring.camel.SimpleMeasurement";
 	if (message.data) {
 		var data = message.data;
@@ -193,23 +181,22 @@ function onMessage(message) {
 };
 
 function setValue(measurement) {
-	led3.setLedOnOff(true);
-	setTimeout(function() {
-		led3.setLedOnOff(false);
-	}, 500);
+	trigger(led3);
 	var key = measurement.name;
 	var value = parseFloat(measurement.value.$);
-	instrument = dashboard[instrumentMapping[key]];
-	if (instrument != undefined && value != undefined && !isNaN(value)) {
-		led4.setLedOnOff(true);
-		setTimeout(function() {
-			led4.setLedOnOff(false);
-		}, 500);
-		instrument.setValueAnimated(value);
-	} else {
-		console.log(value + " not a number");
+	config = instrumentMapping[key];
+	if (config != undefined && value != undefined && !isNaN(value)) {
+		trigger(led4);
+		config.setValue(value);
 	}
-	;
+}
+
+function trigger(led) {
+	led.setLedOnOff(true);
+	setTimeout(function() {
+		led.setLedOnOff(false);
+	}, 500);
+	
 }
 
 function resetMinMax(gauge) {
@@ -268,7 +255,9 @@ function init() {
 	// initDisplays(document.getElementById('displays'));
 	initRadials(document.getElementById('radials'));
 	initBars(document.getElementById('bars'));
-	for ( var i = 0; i < configurations.length; i++)
-		configureInstrument(configurations[i]);
+	for ( var i = 0; i < configurations.length; i++) {
+		config=configurations[i];
+		instrumentMapping[config.name] = config;
+	}
 	connect();
 }

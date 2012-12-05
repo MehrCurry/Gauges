@@ -15,13 +15,35 @@ Array.prototype.addAll = function() {
 	}
 }
 
+defaults = {
+	maxValue : 100,
+	thresholdVisible : false,
+	minMeasuredValueVisible : true,
+	maxMeasuredValueVisible : true,
+	frameDesign : defaultDesign,
+	backgroundColor : defaultBackgroundColor,
+	lcdColor : defaultLcdColor,
+	ledColor : defaultLedColor,
+	knobType : defaultKnobType,
+	knobStyle : defaultKnobStyle
+}
+
 function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 	return [ {
 		name : mesurementId + ".InflightExchanges",
 		instrumentKey : instrumentPrefix + id++,
-		title : namePrefix +" Inflight",
-		min : 0,
-		max : 10,
+		setter : {
+			key:mesurementId + ".InflightExchanges",
+			setValue : function(value) {
+				instrument.setValueAnimated(value);
+			}			
+		},
+		parameter : {
+			titleString : namePrefix + " Inflight",
+			minValue : 0,
+			maxValue : 10,
+			useOdometer : true
+		},
 		sections : [ {
 			start : 0,
 			end : 5,
@@ -42,11 +64,22 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 		} ]
 
 	}, {
+		name : mesurementId + ".ExchangesTotal",
+		instrumentKey : instrumentPrefix + id - 1,
+		setValue : function(value) {
+			instrument.setOdoValue(value);
+		},
+	}, {
 		name : mesurementId + ".ExchangesFailed",
 		instrumentKey : instrumentPrefix + id++,
-		title : namePrefix +" Failed",
-		min : 0,
-		max : 100,
+		setValue : function(value) {
+			instrument.setValueAnimated(value);
+		},
+		parameter : {
+			titleString : namePrefix + " Failed",
+			minValue : 0,
+			maxValue : 100
+		},
 		sections : [ {
 			start : 0,
 			end : 100,
@@ -55,9 +88,14 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 	}, {
 		name : mesurementId + ".Load01",
 		instrumentKey : instrumentPrefix + id++,
-		title : namePrefix +" Load01",
-		min : 0,
-		max : 10,
+		setValue : function(value) {
+			instrument.setValueAnimated(value);
+		},
+		parameter : {
+			titleString : namePrefix + " Load01",
+			minValue : 0,
+			maxValue : 10
+		},
 		sections : [ {
 			start : 0,
 			end : 5,
@@ -79,10 +117,15 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 	}, {
 		name : mesurementId + ".LastProcessingTime",
 		instrumentKey : instrumentPrefix + id++,
-		title : namePrefix +" Last",
-		unit : "ms",
-		min : 0,
-		max : 1000,
+		setValue : function(value) {
+			instrument.setValueAnimated(value);
+		},
+		parameter : {
+			titleString : namePrefix + " Last",
+			unitString : "ms",
+			minValue : 0,
+			maxValue : 1000
+		},
 		sections : [ {
 			start : 0,
 			end : 300,
@@ -104,10 +147,15 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 	}, {
 		name : mesurementId + ".MeanProcessingTime",
 		instrumentKey : instrumentPrefix + id++,
-		title : namePrefix +" Mean",
-		unit : "ms",
-		min : 0,
-		max : 1000,
+		setValue : function(value) {
+			instrument.setValueAnimated(value);
+		},
+		parameter : {
+			titleString : namePrefix + " Mean",
+			unitString : "ms",
+			minValue : 0,
+			maxValue : 1000
+		},
 		sections : [ {
 			start : 0,
 			end : 300,
@@ -130,23 +178,42 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 };
 
 configurations = [];
-configurations.addAll(configureCamelRoute("Camel.out","Out", "radial", 0));
+configurations.addAll(configureCamelRoute("Camel.out", "Out", "radial", 0));
 configurations.addAll(configureCamelRoute("Camel.jmx", "JMX", "radial", 5));
 configurations.addAll(configureCamelRoute("Camel.fetch", "WWW", "radial", 10));
-configurations.addAll(configureCamelRoute("Camel.proxy", "Proxy", "radial", 15));
+configurations
+		.addAll(configureCamelRoute("Camel.proxy", "Proxy", "radial", 15));
 
-configurations.addAll([  {
+configurations.addAll([ {
 	name : "System.memory.HeapMemoryUsage.used",
 	instrumentKey : "bar0",
-	title : "Heap",
-	unit : "MB",
-	min : 0,
-	max : 500
+	setValue : function(value) {
+		instrument.setValueAnimated(value);
+	},
+	parameter : {
+		titleString : "Heap",
+		unitString : "MB",
+		minValue : 0,
+		maxValue : 500
+	}
 }, {
 	name : "System.memory.NonHeapMemoryUsage.used",
 	instrumentKey : "bar1",
-	title : "NonHeap",
-	unit : "MB",
-	min : 0,
-	max : 200
+	setValue : function(value) {
+		instrument.setValueAnimated(value);
+	},
+	parameter : {
+		titleString : "NonHeap",
+		unitString : "MB",
+		minValue : 0,
+		maxValue : 200
+	}
 } ]);
+
+configurationMap = new Object();
+
+for ( var i = 0; i < configurations.length; i++) {
+	config = configurations[i];
+	config.parameter = $.extend({}, defaults, config.parameter);
+	configurationMap[config.instrumentKey] = config;
+}
