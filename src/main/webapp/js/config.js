@@ -26,18 +26,18 @@ function InstrumentConfiguration(parameter) {
 	this.instrument = undefined;
 	this.mappings = {};
 	this.parameter = {
-			maxValue : 100,
-			thresholdVisible : false,
-			minMeasuredValueVisible : true,
-			maxMeasuredValueVisible : true,
-			frameDesign : defaultDesign,
-			backgroundColor : defaultBackgroundColor,
-			lcdColor : defaultLcdColor,
-			ledColor : defaultLedColor,
-			knobType : defaultKnobType,
-			knobStyle : defaultKnobStyle,
-			digitalFont: true
-		};
+		maxValue : 100,
+		thresholdVisible : false,
+		minMeasuredValueVisible : true,
+		maxMeasuredValueVisible : true,
+		frameDesign : defaultDesign,
+		backgroundColor : defaultBackgroundColor,
+		lcdColor : defaultLcdColor,
+		ledColor : defaultLedColor,
+		knobType : defaultKnobType,
+		knobStyle : defaultKnobStyle,
+		digitalFont : true
+	};
 	this.addMapping = function(id, setter) {
 		this.mappings[id] = setter;
 	}
@@ -100,7 +100,7 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			titleString : namePrefix + " Failed",
 			minValue : 0,
 			maxValue : 100,
-			useOdometer:true,
+			useOdometer : true,
 			odometerUseValue : true
 		},
 		sections : [ {
@@ -206,11 +206,13 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 };
 
 configurations = [];
-configurations.addAll(configureCamelRoute("Camel.out", "Out", "radial", 0));
-configurations.addAll(configureCamelRoute("Camel.jmx", "JMX", "radial", 5));
-configurations.addAll(configureCamelRoute("Camel.fetch", "WWW", "radial", 10));
+/*
+ * configurations.addAll(configureCamelRoute("Camel.out", "Out", "radial", 0));
+ * configurations.addAll(configureCamelRoute("Camel.jmx", "JMX", "radial", 5));
+ */
+configurations.addAll(configureCamelRoute("Camel.fetch", "WWW", "radial", 0));
 configurations
-		.addAll(configureCamelRoute("Camel.proxy", "Proxy", "radial", 15));
+		.addAll(configureCamelRoute("Camel.proxy", "Proxy", "radial", 5));
 
 configurations.addAll([ new InstrumentConfiguration({
 	name : "System.memory.HeapMemoryUsage.used",
@@ -230,6 +232,21 @@ configurations.addAll([ new InstrumentConfiguration({
 		minValue : 0,
 		maxValue : 200
 	}
+}), new InstrumentConfiguration({
+	name : "System.gc.LastGcInfo.duration",
+	instrumentKey : "bar2",
+	parameter : {
+		titleString : "GC Duration",
+		unitString : "ms",
+		minValue : 0,
+		maxValue : 500
+	},
+	areas : [ {
+		start : 300,
+		end : 1000,
+		color : red30
+	} ]
+
 }) ]);
 
 configurationMap = new Object();
