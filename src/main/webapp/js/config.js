@@ -15,28 +15,42 @@ Array.prototype.addAll = function() {
 	}
 }
 
-defaults = {
-	maxValue : 100,
-	thresholdVisible : false,
-	minMeasuredValueVisible : true,
-	maxMeasuredValueVisible : true,
-	frameDesign : defaultDesign,
-	backgroundColor : defaultBackgroundColor,
-	lcdColor : defaultLcdColor,
-	ledColor : defaultLedColor,
-	knobType : defaultKnobType,
-	knobStyle : defaultKnobStyle
+function InstrumentConfiguration(parameter) {
+	this.instrument = {};
+	this.mappings = [];
+	this.config = {
+		maxValue : 100,
+		thresholdVisible : false,
+		minMeasuredValueVisible : true,
+		maxMeasuredValueVisible : true,
+		frameDesign : defaultDesign,
+		backgroundColor : defaultBackgroundColor,
+		lcdColor : defaultLcdColor,
+		ledColor : defaultLedColor,
+		knobType : defaultKnobType,
+		knobStyle : defaultKnobStyle
+	};
+
+	this.addMapping = function(id, setter) {
+		this.mappings[id] = setter;
+	}
+
+	$.extend(true, this, parameter);
+	this.addMapping(parameter.name,function(value) {instrument.setValueAnimated(value); });
+
 }
 
 function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
-	return [ {
+	result = [];
+
+	var config=new InstrumentConfiguration({
 		name : mesurementId + ".InflightExchanges",
 		instrumentKey : instrumentPrefix + id++,
 		setter : {
-			key:mesurementId + ".InflightExchanges",
+			key : mesurementId + ".InflightExchanges",
 			setValue : function(value) {
 				instrument.setValueAnimated(value);
-			}			
+			}
 		},
 		parameter : {
 			titleString : namePrefix + " Inflight",
@@ -63,13 +77,10 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			color : red30
 		} ]
 
-	}, {
-		name : mesurementId + ".ExchangesTotal",
-		instrumentKey : instrumentPrefix + id - 1,
-		setValue : function(value) {
-			instrument.setOdoValue(value);
-		},
-	}, {
+	});
+	result.push(config);
+
+	var config=new InstrumentConfiguration({
 		name : mesurementId + ".ExchangesFailed",
 		instrumentKey : instrumentPrefix + id++,
 		setValue : function(value) {
@@ -85,7 +96,11 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			end : 100,
 			color : red
 		} ]
-	}, {
+	});
+	result.push(config);
+
+	var config=new InstrumentConfiguration({
+
 		name : mesurementId + ".Load01",
 		instrumentKey : instrumentPrefix + id++,
 		setValue : function(value) {
@@ -114,7 +129,11 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			end : 10,
 			color : red30
 		} ]
-	}, {
+	});
+	result.push(config);
+
+	var config=new InstrumentConfiguration({
+
 		name : mesurementId + ".LastProcessingTime",
 		instrumentKey : instrumentPrefix + id++,
 		setValue : function(value) {
@@ -144,7 +163,11 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			end : 1000,
 			color : red30
 		} ]
-	}, {
+	});
+	result.push(config);
+
+	var config=new InstrumentConfiguration({
+
 		name : mesurementId + ".MeanProcessingTime",
 		instrumentKey : instrumentPrefix + id++,
 		setValue : function(value) {
@@ -174,7 +197,8 @@ function configureCamelRoute(mesurementId, namePrefix, instrumentPrefix, id) {
 			end : 1000,
 			color : red30
 		} ]
-	} ];
+	});
+	result.push(config);
 };
 
 configurations = [];
