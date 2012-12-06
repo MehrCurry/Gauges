@@ -1,10 +1,3 @@
-var defaultDesign = steelseries.FrameDesign.GLOSSY_METAL;
-var defaultBackgroundColor = steelseries.BackgroundColor.LIGHT_GRAY;
-var defaultLcdColor = steelseries.LcdColor.GREEN;
-var defaultLedColor = steelseries.LedColor.GREEN;
-var defaultKnobType = steelseries.KnobType.METAL_KNOW;
-var defaultKnobStyle = steelseries.KnobStyle.SILVER;
-
 var dashboard = new Object();
 
 var instrumentMapping = new Object();
@@ -69,7 +62,7 @@ function initDisplays(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
+		config=configurationMap[id] != undefined ? configurationMap[id] : {};
 		var displaySingle = new steelseries.DisplaySingle(id, config);
 		config.instrument=displaySingle;
 		dashboard[id] = displaySingle;
@@ -95,7 +88,7 @@ function initRadials(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
+		config=configurationMap[id] != undefined ? configurationMap[id] : {};
 		var instrument = new steelseries.Radial(id, config.parameter);
 		if (config.areas != undefined)
 			instrument.setArea(convertToSection(config.areas));
@@ -125,8 +118,8 @@ function initBars(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : defaults;
-		var instrument = new steelseries.Linear(id, config);
+		config=configurationMap[id] != undefined ? configurationMap[id] : {};
+		var instrument = new steelseries.Linear(id, config.parameter);
 		config.instrument=instrument;
 		dashboard[id] = instrument;
 	}
@@ -184,10 +177,10 @@ function setValue(measurement) {
 	trigger(led3);
 	var key = measurement.name;
 	var value = parseFloat(measurement.value.$);
-	config = instrumentMapping[key];
+	var config = valueMapping[key];
 	if (config != undefined && value != undefined && !isNaN(value)) {
 		trigger(led4);
-		config.setValue(value);
+		config.setValue(key,value);
 	}
 }
 
@@ -211,10 +204,7 @@ function resetAllMinMax() {
 }
 
 function configureInstrument(config) {
-	led5.setLedOnOff(true);
-	setTimeout(function() {
-		led5.setLedOnOff(false);
-	}, 2000);
+	trigger(led5);
 	try {
 		instrumentMapping[config.name] = config.instrumentKey;
 		instrument = dashboard[config.instrumentKey];
