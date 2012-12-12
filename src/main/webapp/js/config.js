@@ -249,6 +249,58 @@ configurations.addAll([ new InstrumentConfiguration({
 
 }) ]);
 
+var cfg=new InstrumentConfiguration({
+	name : "Zockoll.Pac.WR",
+	instrumentKey : "radial10",
+	parameter : {
+		titleString : "Leistung",
+		unitString : "Watt",
+		minValue : 0,
+		maxValue : 6000,
+		useOdometer: true
+	}
+});
+cfg.addMapping("Zockoll.Ertrag.WR",
+		function(config, value) {
+			config.instrument.setOdoValue(value);
+		});
+configurations.push(cfg);
+var cfg=new InstrumentConfiguration({
+	name : "Zockoll.Gesamt.WR",
+	instrumentKey : "radial11",
+	parameter : {
+		titleString : "Ertrag",
+		unitString : "KWh",
+		minValue : 0,
+		maxValue : 5000
+	}
+});
+configurations.push(cfg);
+var cfg=new InstrumentConfiguration({
+	name : "Zockoll.Udc1.WR",
+	instrumentKey : "radial12",
+	parameter : {
+		titleString : "Spanung",
+		unitString : "Volt",
+		minValue : 0,
+		maxValue : 500
+	}
+});
+configurations.push(cfg);
+var cfg=new InstrumentConfiguration({
+	name : "Zockoll.Udc2.WR",
+	instrumentKey : "radial13",
+	parameter : {
+		titleString : "Spanung",
+		unitString : "Volt",
+		minValue : 0,
+		maxValue : 500
+	}
+});
+configurations.push(cfg);
+
+
+
 configurationMap = new Object();
 valueMapping = {};
 for ( var i = 0; i < configurations.length; i++) {

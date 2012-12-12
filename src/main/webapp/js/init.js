@@ -62,9 +62,9 @@ function initDisplays(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : {};
+		config = configurationMap[id] != undefined ? configurationMap[id] : {};
 		var displaySingle = new steelseries.DisplaySingle(id, config);
-		config.instrument=displaySingle;
+		config.instrument = displaySingle;
 		dashboard[id] = displaySingle;
 	}
 }
@@ -88,13 +88,13 @@ function initRadials(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : {};
+		config = configurationMap[id] != undefined ? configurationMap[id] : {};
 		var instrument = new steelseries.Radial(id, config.parameter);
 		if (config.areas != undefined)
 			instrument.setArea(convertToSection(config.areas));
 		if (config.sections != undefined)
 			instrument.setSection(convertToSection(config.sections));
-		config.instrument=instrument;
+		config.instrument = instrument;
 		dashboard[id] = instrument;
 	}
 }
@@ -118,9 +118,9 @@ function initBars(parent) {
 		canv.setAttribute('id', id);
 		td.appendChild(canv);
 		row.appendChild(td);
-		config=configurationMap[id] != undefined ? configurationMap[id] : {};
+		config = configurationMap[id] != undefined ? configurationMap[id] : {};
 		var instrument = new steelseries.Linear(id, config.parameter);
-		config.instrument=instrument;
+		config.instrument = instrument;
 		dashboard[id] = instrument;
 	}
 }
@@ -163,24 +163,20 @@ function connect() {
 
 function onMessage(message) {
 	trigger(led2);
-	className = "de.gzockoll.monitoring.camel.SimpleMeasurement";
 	if (message.data) {
 		var data = message.data;
 		var payload = jQuery.parseJSON(data);
-		if (payload[className] != undefined) {
-			setValue(payload[className]);
-		}
+		setValue(payload.key, payload.value);
+
 	}
 };
 
-function setValue(measurement) {
+function setValue(key, value) {
 	trigger(led3);
-	var key = measurement.name;
-	var value = parseFloat(measurement.value.$);
 	var config = valueMapping[key];
 	if (config != undefined && value != undefined && !isNaN(value)) {
 		trigger(led4);
-		config.setValue(key,value);
+		config.setValue(key, value);
 	}
 }
 
@@ -189,7 +185,7 @@ function trigger(led) {
 	setTimeout(function() {
 		led.setLedOnOff(false);
 	}, 500);
-	
+
 }
 
 function resetMinMax(gauge) {
@@ -246,7 +242,7 @@ function init() {
 	initRadials(document.getElementById('radials'));
 	initBars(document.getElementById('bars'));
 	for ( var i = 0; i < configurations.length; i++) {
-		config=configurations[i];
+		config = configurations[i];
 		instrumentMapping[config.name] = config;
 	}
 	connect();
