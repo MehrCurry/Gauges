@@ -53,7 +53,7 @@ function initLED(parent) {
 function initRadials(parent) {
 	var row
 
-	for ( var item = 0; item < 12; item++) {
+	for ( var item = 0; item < 18; item++) {
 		if ((item % 6) == 0) {
 			row = document.createElement("div");
 			row.className="row-fluid";
@@ -124,9 +124,7 @@ function connect() {
 	var hostname = window.location.hostname;
 	if (hostname == "")
 		hostname = "localhost";
-	// var url = "ws://" + hostname + ":61614/stomp";
-	var url = "ws://" + hostname + ":1616/solarmon";
-	// var client = Stomp.client(url);
+	var url = "ws://" + hostname + ":9292/solarmon";
 	var login = "";
 	var passcode = "";
 
