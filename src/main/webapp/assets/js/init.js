@@ -51,24 +51,24 @@ function initLED(parent) {
 }
 
 function initRadials(parent) {
-	var table = document.createElement("table");
-	parent.appendChild(table);
-	var row;
+	var row
 
-	for ( var item = 0; item < 40; item++) {
-		if ((item % 8) == 0) {
-			row = document.createElement("tr");
-			table.appendChild(row);
+	for ( var item = 0; item < 12; item++) {
+		if ((item % 6) == 0) {
+			row = document.createElement("div");
+			row.className="row-fluid";
+			parent.appendChild(row);
 		}
 		var canv = document.createElement("canvas");
-		var td = document.createElement("td");
+		var div = document.createElement("div");
+		div.className="span2";
 		canv.setAttribute('width', 200);
 		canv.setAttribute('height', 200);
 
 		var id = 'radial' + item;
 		canv.setAttribute('id', id);
-		td.appendChild(canv);
-		row.appendChild(td);
+		div.appendChild(canv);
+		row.appendChild(div);
 		var radial = new steelseries.Radial(id, {
 			maxValue : 100,
 			threshold : 100,
@@ -85,27 +85,27 @@ function initRadials(parent) {
 }
 
 function initBars(parent) {
-	var table = document.createElement("table");
-	parent.appendChild(table);
 	var row;
-	for ( var item = 0; item < 20; item++) {
-		if ((item % 5) == 0) {
-			row = document.createElement("tr");
-			table.appendChild(row);
+	
+	for ( var item = 0; item < 6; item++) {
+		if ((item % 3) == 0) {
+			row = document.createElement("div");
+			row.className="row-fluid";
+			parent.appendChild(row);
 		}
 		var canv = document.createElement("canvas");
-		var td = document.createElement("td");
-		td.colSpan = "2";
+		var div = document.createElement("div");
+		div.className="span4";
 		canv.setAttribute('width', 400);
 		canv.setAttribute('height', 140);
 
 		var id = 'bar' + item;
 		canv.setAttribute('id', id);
-		td.appendChild(canv);
-		row.appendChild(td);
-		var bar = new steelseries.Linear(id, {
-			width : 140,
-			height : 400,
+		div.appendChild(canv);
+		row.appendChild(div);
+		var bar = new steelseries.LinearBargraph(id, {
+			width : 400,
+			height : 140,
 			maxValue : 100,
 			threshold : 100,
 			thresholdVisible : false,
