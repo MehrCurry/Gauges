@@ -53,12 +53,7 @@ function initLED(parent) {
 function initRadials(parent) {
 	var row
 
-	for ( var item = 0; item < 18; item++) {
-		if ((item % 6) == 0) {
-			row = document.createElement("div");
-			row.className="row-fluid";
-			parent.appendChild(row);
-		}
+	for ( var item = 0; item < 6; item++) {
 		var canv = document.createElement("canvas");
 		var div = document.createElement("div");
 		div.className="span2";
@@ -68,7 +63,7 @@ function initRadials(parent) {
 		var id = 'radial' + item;
 		canv.setAttribute('id', id);
 		div.appendChild(canv);
-		row.appendChild(div);
+		parent.appendChild(div);
 		var radial = new steelseries.Radial(id, {
 			maxValue : 100,
 			threshold : 100,
@@ -246,7 +241,7 @@ function configureAreas(instrument, ranges) {
 
 function init() {
 	initLED(document.getElementById('leds'));
-	initRadials(document.getElementById('radials'));
-	initBars(document.getElementById('bars'));
+	//initRadials(document.getElementById('radials'));
+	// initBars(document.getElementById('bars'));
 	connect();
 }

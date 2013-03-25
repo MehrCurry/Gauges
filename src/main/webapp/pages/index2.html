@@ -3,7 +3,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bootstrap, from Twitter</title>
+<script
+	src="http://monitoring.norderstedt-energie.de/1064/base_vars.js?nocache"></script>
+<script>
+	document.write('<title>' + HPTitel + '</title>');
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -33,6 +38,9 @@ body {
 <link rel="apple-touch-icon-precomposed"
 	href="../assets/ico/apple-touch-icon-57-precomposed.png">
 <link rel="shortcut icon" href="../assets/ico/favicon.png">
+<script src="../assets/js/tween-min.js"></script>
+<script src="../assets/js/steelseries-min.js"></script>
+<script src="../assets/js/init.js"></script>
 </head>
 
 <body onload="init();">
@@ -45,7 +53,9 @@ body {
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="brand" href="#">Project name</a>
+				<a class="brand" href="#"><script>
+					document.write(HPTitel)
+				</script></a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li class="active"><a href="#">Home</a></li>
@@ -80,15 +90,10 @@ body {
 			</p>
 		</div>
 
-		<hr>
-		<div id="radials">
-			<h2>Instumente</h2>
-			<br />
-		</div>
-		<div id="bars">
-			<h2>Balken</h2>
-			<br />
-		</div>
+		<div id="radials1" class="row-fluid"></div>
+		<script>
+			initRadials(document.getElementById('radials1'));
+		</script>
 
 		<footer>
 			<p>&copy; Guido Zockoll 2013</p>
@@ -113,12 +118,149 @@ body {
 	<script src="../assets/js/bootstrap-collapse.js"></script>
 	<script src="../assets/js/bootstrap-carousel.js"></script>
 	<script src="../assets/js/bootstrap-typeahead.js"></script>
-	<script src="../assets/js/tween-min.js"></script>
-	<script src="../assets/js/steelseries-min.js"></script>
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	<script src="../assets/js/charts.js"></script>
-	<script src="http://monitoring.norderstedt-energie.de/1064/base_vars.js?nocache"></script>
-	<script src="../assets/js/init.js"></script>
+	<script src="../assets/js/chartsss.js"></script>
+	<script>
+		var m = new Array();
+		var mi = 0;
+		var da = new Array();
+		var dx = 0;
+		var mo = new Array();
+		var mx = 0;
+		var ye = new Array();
+		var yx = 0;
+	</script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/min_cur.js?nocache"></script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/min_day.js?nocache"></script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/days.js?nocache"></script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/days_hist.js?nocache"></script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/months.js?nocache"></script>
+	<script
+		src="http://monitoring.norderstedt-energie.de/1064/years.js?nocache"></script>
+	<script src="../assets/js/solarlog_helper.js"></script>
+	<script>
+		function dateFromString(str) {
+			var m = str.match(/(\d+)\.(\d+)\.(\d+)\s+(\d+):(\d+):(\d+)/);
+			return Date
+					.UTC(+m[3] + 2000, +m[2] - 1, +m[1], +m[4], +m[5], +m[6]);
+		}
+
+		function createEntry(dt, value) {
+			return new Array(dt, parseInt(value));
+		}
+		var tagesSoll = SollYearKWP * AnlagenKWP / 10 * sollMonth[2] / 300000;
+		var ac = new Array();
+		var dc1 = new Array();
+		var dc2 = new Array();
+		var ertrag = new Array();
+		var u1 = new Array();
+		var u2 = new Array();
+		var temp = new Array();
+		var soll = new Array();
+		var categories = new Array();
+		for (i = mi - 1; i >= 0; i--) {
+			var parts = m[i].split('|');
+			var date = dateFromString(parts[0]);
+			var values = parts[1].split(';');
+			ac.push(createEntry(date, values[0]));
+			dc1.push(createEntry(date, values[1]));
+			dc2.push(createEntry(date, values[2]));
+			ertrag.push(new Array(date, parseInt(values[3]) / 1000.0));
+			u1.push(createEntry(date, values[4]));
+			u2.push(createEntry(date, values[5]));
+			categories.push(parts[0])
+		}
+		soll.push(new Array(ac[0][0], tagesSoll));
+		soll.push(new Array(ac[ac.length - 1][0], tagesSoll));
+		var options = {
+			chart : {
+				renderTo : 'container',
+				type : 'areaspline',
+				zoomType : 'x'
+			},
+			title : {
+				text : HPTitel
+			},
+			xAxis : {
+				type : 'datetime',
+				tickIntervall : 15 * 60 * 1000,
+				dateTimeLabelFormats : { // don't display the dummy year
+					month : '%e. %b',
+					year : '%b'
+				}
+			},
+			yAxis : [ { //--- Primary yAxis
+				title : {
+					text : 'Leistung [W]'
+				},
+				min : 0,
+				max : 5000
+			}, { //--- Secondary yAxis
+				title : {
+					text : 'Energie [kWh]'
+				},
+				min : 0,
+				max : 40,
+				opposite : true
+			} ],
+
+			series : [ {
+
+				yAxis : 0,
+				name : 'AC Leistung',
+				color : '#E0C000',
+				data : ac
+			}, {
+				yAxis : 0,
+				type : 'spline',
+				name : 'DC Leistung String 1',
+				data : dc1
+			}, {
+				yAxis : 0,
+				type : 'spline',
+				name : 'DC Leistung String 2',
+				data : dc2
+			}, {
+				yAxis : 1,
+				type : 'spline',
+				dashStyle : 'Dot',
+				name : 'Ertrag',
+				data : ertrag
+			}, {
+				yAxis : 1,
+				type : 'spline',
+				dashStyle : 'Dash',
+				name : 'Tagessoll',
+				data : soll
+			} ]
+		};
+		function renderChart() {
+			chart = new Highcharts.Chart(options);
+		}
+		//this function requests the data
+	    function reqData(){
+	        $.ajax({
+	            url: "http://monitoring.norderstedt-energie.de/1064/min_day.js?nocache",
+	            dataType: "jsonp",              
+	            jsonp: "callback",
+	            jsonpCallback: "jsonpcallback"
+	        });
+	    }
+		var chart;
+		//after DOM is loaded setup timeout to call the ajax method
+		$(document).ready(function() {
+			//call function to render the chart and setup the options
+			renderChart();
+		});
+		
+		
+	</script>
+
 </body>
 </html>
