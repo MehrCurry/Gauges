@@ -14,7 +14,7 @@
 		}
 		oHead.appendChild(oScript);
 	}
-	var update =function() {
+	var update = function() {
 		m = new Array();
 		mi = 0;
 		loadScript(
@@ -36,18 +36,30 @@
 					var temp = new Array();
 					var soll = new Array();
 					var categories = new Array();
+					var data=new Array();
 					for (i = mi - 1; i >= 0; i--) {
 						var parts = m[i].split('|');
 						var date = dateFromString(parts[0]);
 						var values = parts[1].split(';');
-						ac.push([ date, parseFloat(values[0]) ]);
-						dc1.push([ date, parseFloat(values[1]) ]);
-						dc2.push([ date, parseFloat(values[2]) ]);
-						ertrag.push([ date, parseFloat(values[3]) / 1000.0 ]);
-						u1.push([ date, parseFloat(values[4]) ]);
-						u2.push([ date, parseFloat(values[5]) ]);
+						var dataPoint = {
+							date: date,	
+							ac : parseFloat(values[0]),
+							dc1 : parseFloat(values[1]),
+							dc2 : parseFloat(values[2]),
+							ertrag : parseFloat(values[3] / 1000.0),
+							u1 : parseFloat(values[4]),
+							u2 : parseFloat(values[5])
+						};
+						data.push(dataPoint);
+						ac.push([ dataPoint.date, dataPoint.ac ]);
+						dc1.push([ dataPoint.date, dataPoint.dc1 ]);
+						dc2.push([ dataPoint.date, dataPoint.dc2 ]);
+						ertrag.push([ dataPoint.date, dataPoint.ertrag]);
+						u1.push([ dataPoint.date, dataPoint.u1 ]);
+						u2.push([ dataPoint.date, dataPoint.u2 ]);
 						categories.push(parts[0])
 					}
+					updateInstruments(data[mi-1]);
 					var x = local2UTC(new Date());
 					var startEnd = getStartAndEnd(new Date());
 					soll.push([ startEnd[0].getTime(), tagesSoll ]);
@@ -56,10 +68,25 @@
 						chart : {
 							renderTo : 'container',
 							type : 'areaspline',
-							zoomType : 'x'
+							zoomType : 'x',
+							events : {
+								load : function() {
+
+									// set up the updating of the chart each
+									// second
+									var series = this.series[0];
+									/*
+									setInterval(function() {
+										var x = (new Date()).getTime(), // current
+										// time
+										y = Math.random();
+										series.addPoint([ x, y ], true, true);
+									}, 1000); */
+								}
+							}
 						},
 						title : {
-							text : HPTitel
+							text : 'Tagesübersicht'
 						},
 						xAxis : {
 							type : 'datetime',
@@ -146,5 +173,57 @@
 	}
 	update();
 	setInterval(update, 60000);
+	function updateInstruments(p) {
+		var today = new Date();
+		var tagesSoll = Math.round(SollYearKWP
+				* AnlagenKWP
+				/ 10
+				* sollMonth[2]
+				/ (10000 * getDaysInMonth(today.getFullYear(),
+						today.getMonth())) * 10) / 10;
+		var sections = Array(steelseries.Section(0, tagesSoll/2, 'rgba(220, 0, 0, 0.7)'),
+                steelseries.Section(tagesSoll/2, tagesSoll, 'rgba(220, 220, 0, 0.7)'), 
+                steelseries.Section(tagesSoll/2, 100, 'rgba(0, 220, 0, 0.7)'));
+		
+		var rad=dashboard['radial0'];
+		rad.setMaxValue(AnlagenKWP);
+		rad.setTitleString("AC");
+		rad.setUnitString("Watt");
+		rad.setValueAnimated(p.ac);
+
+		rad=dashboard['radial1']
+		rad.setMaxValue(40);
+		rad.setTitleString("Ertrag");
+		rad.setUnitString("kWh");
+		rad.setSection(sections);
+		rad.setValueAnimated(p.ertrag);
+		
+		rad=dashboard['radial2'];
+		rad.setMaxValue(AnlagenKWP);
+		rad.setTitleString("DC Strang 1");
+		rad.setUnitString("Watt");
+		rad.setValueAnimated(p.dc1);
+		
+		rad=dashboard['radial3'];
+		rad.setMaxValue(AnlagenKWP);
+		rad.setTitleString("DC Strang 2");
+		rad.setUnitString("Watt");
+		rad.setValueAnimated(p.dc2);
+		
+		rad=dashboard['radial4'];
+		rad.setMaxValue(500);
+		rad.setTitleString("U Strang 1");
+		rad.setUnitString("Volt");
+		rad.setValueAnimated(p.u1);
+
+		rad=dashboard['radial5'];
+		rad.setMaxValue(500);
+		rad.setTitleString("U Strang 2");
+		rad.setUnitString("Volt");
+		rad.setValueAnimated(p.u2);
+	}
+	function configure(instrument,config) {
+		
+	}
 
 }(Highcharts));
