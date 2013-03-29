@@ -3,11 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script
-	src="http://monitoring.norderstedt-energie.de/1064/base_vars.js?nocache"></script>
-<script>
-	document.write('<title>' + HPTitel + '</title>');
-</script>
+<title>Sonnenfleck</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
@@ -53,9 +49,6 @@ body {
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="brand" href="#"><script>
-					document.write(HPTitel)
-				</script></a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li class="active"><a href="#">Home</a></li>
@@ -84,12 +77,20 @@ body {
 
 		<div class="row-fluid">
 			<div class="span6">
+				<ul class="pager">
+					<li><a href="#">Previous</a></li>
+					<li><a href="#">Next</a></li>
+				</ul>
 				<p>
 				<div id="container"
 					style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 				</p>
 			</div>
 			<div class="span6">
+				<ul class="pager">
+					<li><a href="#">Previous</a></li>
+					<li><a href="#">Next</a></li>
+				</ul>
 				<p>
 				<div id="container1"
 					style="min-width: 400px; height: 400px; margin: 0 auto"></div>
@@ -126,21 +127,9 @@ body {
 		var ye = new Array();
 		var yx = 0;
 	</script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/min_dayxx.js?nocache"></script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/min_cur.js?nocache"></script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/days.js?nocache"></script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/days_hist.js?nocache"></script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/months.js?nocache"></script>
-	<script
-		src="http://monitoring.norderstedt-energie.de/1064/years.js?nocache"></script>
 	<script src="../assets/js/solarlog_helper.js"></script>
 	<script src="../assets/js/daychart.js"></script>
-	<script src="../assets/js/monthchart.js"></script>
+	<script src="../assets/js/monthchartxx.js"></script>
 
 </body>
 </html>
