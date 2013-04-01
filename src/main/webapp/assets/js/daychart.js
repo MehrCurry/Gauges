@@ -1,5 +1,5 @@
 (function(Highcharts) {
-	update(new Date(2013, 2, 29),
+	update(new Date(),
 			'http://monitoring.norderstedt-energie.de/1064/');
 
 	function parseArray(raw) {
@@ -21,13 +21,19 @@
 		}
 		return data;
 	}
-	function update(referenceDate,baseUrl) {
+	function update(referenceDate, baseUrl) {
 		m = new Array();
 		mi = 0;
 		var data;
+		var dayFile;
+		if (Date.today().equals(referenceDate.clearTime())) {
+			dayFile = '/min_day.js';
+		} else {
+			dayFile = '/min' + referenceDate.clearTime().toString('yyMMdd')
+					+ '.js';
+		}
 		$.when($.getScript(baseUrl + '/base_vars.js'),
-				$.getScript(baseUrl + '/min_day.js'),
-				$.Deferred(function(deferred) {
+				$.getScript(baseUrl + dayFile), $.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(function() {
 			data = parseArray(m);
@@ -38,6 +44,7 @@
 		});
 	}
 	function createChartOptions(data) {
+		var result={};
 		var referenceDate = new Date(data[0].epoch);
 		var tagesSoll = Math.round(SollYearKWP
 				* AnlagenKWP
@@ -45,7 +52,7 @@
 				* sollMonth[2]
 				/ (10000 * getDaysInMonth(referenceDate.getFullYear(),
 						referenceDate.getMonth())) * 10) / 10;
-		var ac = new Array();
+		result.ac = new Array();
 		var dc1 = new Array();
 		var dc2 = new Array();
 		var ertrag = new Array();

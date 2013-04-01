@@ -1,8 +1,25 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app>
 <head>
 <meta charset="utf-8">
+<script src="../assets/js/jquery-1.9.1.js"></script>
+<script src="../assets/js/bootstrap/bootstrap.js"></script>
+<script src="../assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
+<script
+	src="../assets/js/angular.min.js"></script>
+<script
+	src="https://raw.github.com/mgcrea/angular-strap/master/dist/angular-strap.min.js"></script>
+<!-- 
+<link rel="stylesheet"
+	href="../assets/jquery-ui/themes/base/jquery.ui.all.css">
+<script src="../assets/jquery-ui/ui/jquery.ui.core.js"></script>
+<script src="../assets/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script src="../assets/jquery-ui/ui/jquery.ui.datepicker.js"></script>
+-->
+<script src="../assets/js/solar.js"></script>
+
 <title>Sonnenfleck</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +28,8 @@
 
 <!-- Le styles -->
 <link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/bootstrap-datepicker/css/datepicker.css"
+	rel="stylesheet">
 <style type="text/css">
 body {
 	padding-top: 60px;
@@ -39,8 +58,7 @@ body {
 <script src="../assets/js/init.js"></script>
 </head>
 
-<body onload="init();">
-
+<body ng-controller="SolarCtrl">
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -76,16 +94,26 @@ body {
 	<div class="container-fluid">
 
 		<div class="row-fluid">
-			<div class="span6">
-				<ul class="pager">
-					<li><a href="#">Previous</a></li>
-					<li><a href="#">Next</a></li>
-				</ul>
+			<div class="span12">
+				<input type="text" value="02-16-2012" class="datepicker">
+				<script>
+					var element = $('.datepicker');
+					element.datepicker({
+						format : 'mm-dd-yyyy'
+					});
+				</script>
+
+				<form ng-submit="setDate()">
+					<input b-datepicker ng-model="date"> <input b-datepicker
+						type="text" ng-model="referenceDate" data-date-format="dd.mm.yyyy">
+					<input class="btn-primary" type="submit" value="add">
+				</form>
 				<p>
 				<div id="container"
 					style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 				</p>
 			</div>
+			<!-- 
 			<div class="span6">
 				<ul class="pager">
 					<li><a href="#">Previous</a></li>
@@ -96,6 +124,7 @@ body {
 					style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 				</p>
 			</div>
+			-->
 		</div>
 		<div id="radials1" class="row-fluid"></div>
 		<script>
@@ -112,10 +141,9 @@ body {
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="../assets/js/jquery-1.9.1.js"></script>
-	<script src="../assets/js/bootstrap.js"></script>
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+	<script src="../assets/js/date.js"></script>
 	<script src="../assets/js/helper.js"></script>
 	<script>
 		var m = new Array();
@@ -129,7 +157,5 @@ body {
 	</script>
 	<script src="../assets/js/solarlog_helper.js"></script>
 	<script src="../assets/js/daychart.js"></script>
-	<script src="../assets/js/monthchartxx.js"></script>
-
 </body>
 </html>
