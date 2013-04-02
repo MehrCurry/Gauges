@@ -67,15 +67,15 @@ body {
 				<day-chart id="chart1" items="data"></day-chart>
 			</div>
 			<div class="span6">
-				<month-chart id="chart2" items="data"></month-chart>
+				<month-chart id="chart2" items="monthData"></month-chart>
 			</div>
 		</div>
 		<div class="row-fluid">
 			<div class="span2">
-				<steel-series id="radial0" items="ac"></steel-series>
+				<steel-series id="radial0" items="ac" options="{{ {maxValue:5000} }}"></steel-series>
 			</div>
 			<div class="span2">
-				<steel-series id="radial1" items="ertrag"></steel-series>
+				<steel-series id="radial1" items="ertrag" options="{{ {maxValue:40} }}"></steel-series>
 			</div>
 		</div>
 		<footer>

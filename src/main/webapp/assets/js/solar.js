@@ -1,4 +1,5 @@
 function SolarCtrl($scope, $timeout) {
+	var updateInterval = 10000;
 	var timer;
 	$scope.referenceDate = Date.today();
 	$scope.aDate = new Date();
@@ -14,6 +15,14 @@ function SolarCtrl($scope, $timeout) {
 		u2 : [],
 		soll : []
 	};
+	$scope.monthData = {
+			max : [],
+			soll : [],
+			sollAuflaufend: [],
+			ertrag : [],
+			prognose : [],
+		};
+
 	$scope.currentData = {};
 
 	// update($scope.referenceDate,$scope.baseUrl);
@@ -58,7 +67,7 @@ function SolarCtrl($scope, $timeout) {
 				$scope.data = $scope.createSeriesData(data);
 				$scope.currentData = data[data.length - 1];
 				$scope.ac = $scope.currentData.ac;
-				$scope.ertrag = $scope.currentData.ertrag / 1000;
+				$scope.ertrag = $scope.currentData.ertrag;
 			});
 		});
 		da = new Array();
@@ -67,15 +76,16 @@ function SolarCtrl($scope, $timeout) {
 				$.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(function() {
-			data = $scope.parseDaysHist(new Date(2013, 2, 31), da);
+			data = $scope.parseDaysHist(referenceDate, da);
+			data.push({
+				date: referenceDate.getTime(),
+				ertrag : $scope.currentData.ertrag,
+			});
 			$scope.$apply(function() {
-				// $scope.data = $scope.createSeriesData(data);
-				// $scope.currentData = data[data.length - 1];
-				// $scope.ac = $scope.currentData.ac;
-				// $scope.ertrag = $scope.currentData.ertrag / 1000;
+				$scope.monthData = $scope.createMonthSeriesData(referenceDate,data);
 			});
 		});
-		timer = $timeout($scope.onIimeout, 60000);
+		timer = $timeout($scope.onIimeout, updateInterval);
 	}
 	$scope.parseDaysHist = function(epoch, raw) {
 		var data = new Array();
@@ -93,7 +103,16 @@ function SolarCtrl($scope, $timeout) {
 		}
 		return data;
 	}
-	$scope.parseDaysHist2 = function(epoch, raw) {
+	$scope.createMonthSeriesData = function(epoch, raw) {
+		var result =  {
+				cumulatedData: [],
+				data: [],
+				max: [],
+				ertrag: [],
+				prognose: [],
+				soll: [],
+				sollAuflaufend: []
+		};
 		var selected = new Date(epoch);
 		var daysInMonth = getDaysInMonth(selected.getFullYear(), selected
 				.getMonth());
@@ -105,53 +124,38 @@ function SolarCtrl($scope, $timeout) {
 						.getMonth())) * 10) / 10;
 		var count = 0;
 		var cumulated = 0;
-		var cumulatedData = new Array();
-		var data = new Array();
-		var max = new Array();
-		var ertrag = new Array();
-		var soll = new Array();
-		for (i = dx - 1; i >= 0; i--) {
-			var parts = da[i].split('|');
-			var date = dateFromString(parts[0] + " 00:00:00");
-			var ref = new Date(date);
+		for (i = 0; i < raw.length; i++) {
+		    var ref=new Date(raw[i].date);
 			if (selected.getFullYear() == ref.getFullYear()
 					&& selected.getMonth() == ref.getMonth()) {
-				var values = parts[1].split(';');
-				var dataPoint = {
-					date : date,
-					ertrag : parseFloat(values[0] / 1000.0),
-					max : parseFloat(values[1]),
-				};
+				var dataPoint = raw[i];
+				var x=new Date(dataPoint.date);
 				cumulated += dataPoint.ertrag;
-				data.push(dataPoint);
-				max.push([ dataPoint.date, dataPoint.ac ]);
-				cumulatedData.push([ dataPoint.date, cumulated ]);
-				ertrag.push([ dataPoint.date, dataPoint.ertrag ]);
+				result.max.push([ dataPoint.date, dataPoint.max ]);
+				result.cumulatedData.push([ dataPoint.date, cumulated ]);
+				result.ertrag.push([ dataPoint.date, dataPoint.ertrag ]);
 				count++;
 			}
 		}
-		var prognose = new Array();
-		// prognose.push([ dataPoint.date, cumulated ]);
-		var aDate = new Date(date);
-		for (i = count; i < daysInMonth; i++) {
+		var aDate = new Date(epoch);
+		for (i = count; i <= daysInMonth; i++) {
 			aDate.setDate(i);
-			prognose.push([ aDate.getTime(), cumulated ]);
+			result.prognose.push([ aDate.getTime(), cumulated ]);
 			cumulated += tagesSoll;
 		}
-		var referenceEpoch = selected.getTime();
 		var start = new Date(selected.getFullYear(), selected.getMonth(), 1);
 		var end = new Date(selected.getFullYear(), selected.getMonth() + 1, 1);
 
-		soll.push([ start.getTime(), tagesSoll ]);
-		soll.push([ end.getTime(), tagesSoll ]);
-		var sollAuflaufend = new Array();
+		result.soll.push([ start.getTime(), tagesSoll ]);
+		result.soll.push([ end.getTime(), tagesSoll ]);
 		var day = start;
 		var sum = 0;
 		for (i = 1; i <= daysInMonth; i++) {
 			day.setDate(i);
 			sum = sum + tagesSoll;
-			sollAuflaufend.push([ day.getTime(), sum ]);
+			result.sollAuflaufend.push([ day.getTime(), sum ]);
 		}
+		return result;
 	}
 	$scope.parseArray = function(raw) {
 		var data = new Array();

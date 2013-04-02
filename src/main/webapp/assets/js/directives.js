@@ -19,29 +19,32 @@ angular.module('steelSeries', []).directive('steelSeries', function() {
 		},
 		template : '<canvas style="margin: 0 auto">not working</canvas>',
 		link : function(scope, element, attrs) {
+			var userOptions = {};
 			console.log(6);
-			if (scope.items == undefined)
-				return;
-			var options = {
-				maxValue : 6000,
-				threshold : 100,
-				thresholdVisible : false,
-				frameDesign : defaultDesign,
-				backgroundColor : defaultBackgroundColor,
-				lcdColor : defaultLcdColor,
-				ledColor : defaultLedColor,
-				knobType : defaultKnobType,
-				knobStyle : defaultKnobStyle
-			};
-			// additional=angular.fromJson(attrs.steelSeries);
-			// $.extend(options,additional);
-			var id = attrs.id;
-			var radial = new steelseries.Radial(id, options);
-			radial.setValueAnimated(scope.items);
+			attrs.$observe('options', function(val) {
+				userOptions = angular.fromJson(val);
+				if (scope.items == undefined)
+					return;
+				var options = {
+					maxValue : 100,
+					threshold : 100,
+					thresholdVisible : false,
+					frameDesign : defaultDesign,
+					backgroundColor : defaultBackgroundColor,
+					lcdColor : defaultLcdColor,
+					ledColor : defaultLedColor,
+					knobType : defaultKnobType,
+					knobStyle : defaultKnobStyle
+				};
+				$.extend(options, userOptions);
+				var radial = new steelseries.Radial(attrs.id, options);
+				radial.setValueAnimated(scope.items);
 
-			scope.$watch("items", function(newValue) {
-				radial.setValueAnimated(newValue);
+				scope.$watch("items", function(newValue) {
+					radial.setValueAnimated(newValue);
+				});
 			});
+
 		}
 	}
 });
@@ -180,7 +183,7 @@ angular.module('monthChart', []).directive('monthChart', function() {
 			var options = {
 				chart : {
 					renderTo : attrs.id,
-					type : 'column',
+					type : 'spline',
 					zoomType : 'x',
 				},
 				title : {
@@ -209,6 +212,10 @@ angular.module('monthChart', []).directive('monthChart', function() {
 
 				} ],
 				plotOptions : {
+					column : {
+						pointWidth : 40,
+						borderWidth : 1
+					},
 					areaspline : {
 						lineWidth : 2,
 						marker : {
@@ -238,45 +245,47 @@ angular.module('monthChart', []).directive('monthChart', function() {
 				},
 				series : [ {
 					yAxis : 0,
+					type : 'areaspline',
 					name : 'Ertrag [kWh]',
 					color : '#E0C000',
-					data : scope.items.ac
+					data : scope.items.ertrag
 				}, {
 					yAxis : 0,
 					type : 'spline',
 					dashStyle : 'Dash',
 					name : 'Tagessoll  [kWh]',
 					data : scope.items.soll
+
 				}, {
 					yAxis : 1,
 					type : 'spline',
 					dashStyle : 'Dash',
-					name : 'Monatsoll  [kWh]',
-					data : scope.items.ac
+					name : 'Monatsoll [kWh]',
+					data : scope.items.sollAuflaufend
 				}, {
 					yAxis : 1,
 					type : 'spline',
 					color : "#00B000",
-					name : 'Ertrag (cum.)  [kWh]',
-					data : scope.items.ac
+					name : 'Ertrag (cum.) [kWh]',
+					data : scope.items.cumulatedData
 				}, {
 					yAxis : 1,
 					type : 'spline',
 					color : "#00B000",
 					dashStyle : 'Dash',
 					name : 'Prognose [kWh]',
-					data : scope.items.ac
+					data : scope.items.prognose
 				} ]
 			};
 			var chart;
 			chart = new Highcharts.Chart(options);
 
 			scope.$watch("items", function(newValue) {
-				chart.series[0].setData(newValue.ac, true);
-				chart.series[1].setData(newValue.dc1, true);
-				chart.series[2].setData(newValue.dc2, true);
-				chart.series[3].setData(newValue.ertrag, true);
-				chart.series[4].setData(newValue.soll, true);
+				chart.series[0].setData(newValue.ertrag, true);
+				chart.series[1].setData(newValue.soll, true);
+				chart.series[2].setData(newValue.sollAuflaufend, true);
+				chart.series[3].setData(newValue.cumulatedData, true);
+				chart.series[4].setData(newValue.prognose, true);
 			});
 		}
 	}
