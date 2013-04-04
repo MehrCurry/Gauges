@@ -72,10 +72,13 @@ body {
 		</div>
 		<div class="row-fluid">
 			<div class="span2">
-				<steel-series id="radial0" items="ac" options="{{ {maxValue:5000} }}"></steel-series>
+				<steel-series id="radial0" items="ac" options="{{ {maxValue:5000, titleString: 'AC Leistung', unitString: 'Watt'} }}"></steel-series>
 			</div>
 			<div class="span2">
-				<steel-series id="radial1" items="ertrag" options="{{ {maxValue:40} }}"></steel-series>
+				<steel-series id="radial1" items="ertrag" options="{{ {maxValue:40,  titleString: 'Tagesertrag', unitString: 'kWh'} }}"></steel-series>
+			</div>
+			<div class="span2">
+				<steel-series id="radial2" items="ertrag" options="{{ {maxValue:600,  titleString: 'Monatsertrag', unitString: 'kWh'} }}"></steel-series>
 			</div>
 		</div>
 		<footer>
