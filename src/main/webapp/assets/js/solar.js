@@ -124,11 +124,10 @@ function SolarCtrl($scope, $timeout) {
 						.getMonth())) * 10) / 10;
 		var count = 0;
 		var cumulated = 0;
-		for (i = 0; i < raw.length; i++) {
-		    var ref=new Date(raw[i].date);
+		_.each(raw,function (dataPoint) {
+		    var ref=new Date(dataPoint.date);
 			if (selected.getFullYear() == ref.getFullYear()
 					&& selected.getMonth() == ref.getMonth()) {
-				var dataPoint = raw[i];
 				var x=new Date(dataPoint.date);
 				cumulated += dataPoint.ertrag;
 				result.max.push([ dataPoint.date, dataPoint.max ]);
@@ -136,7 +135,7 @@ function SolarCtrl($scope, $timeout) {
 				result.ertrag.push([ dataPoint.date, dataPoint.ertrag ]);
 				count++;
 			}
-		}
+		});
 		var aDate = new Date(epoch);
 		for (i = count; i <= daysInMonth; i++) {
 			aDate.setDate(i);
@@ -159,8 +158,8 @@ function SolarCtrl($scope, $timeout) {
 	}
 	$scope.parseArray = function(raw) {
 		var data = new Array();
-		for (i = raw.length - 1; i >= 0; i--) {
-			var parts = raw[i].split('|');
+		_.each(raw.reverse(),function (line) {
+			var parts = line.split('|');
 			var epoch = dateFromString(parts[0]);
 			var values = parts[1].split(';');
 			var dataPoint = {
@@ -173,7 +172,7 @@ function SolarCtrl($scope, $timeout) {
 				u2 : parseFloat(values[5])
 			};
 			data.push(dataPoint);
-		}
+		});
 		return data;
 	}
 	$scope.createSeriesData = function(data) {
@@ -193,15 +192,14 @@ function SolarCtrl($scope, $timeout) {
 		result.u2 = new Array();
 		result.temp = new Array();
 		result.soll = new Array();
-		for (i = 0; i < data.length; i++) {
-			var dataPoint = data[i];
+		_.each(data,function(dataPoint) {
 			result.ac.push([ dataPoint.epoch, dataPoint.ac ]);
 			result.dc1.push([ dataPoint.epoch, dataPoint.dc1 ]);
 			result.dc2.push([ dataPoint.epoch, dataPoint.dc2 ]);
 			result.ertrag.push([ dataPoint.epoch, dataPoint.ertrag ]);
 			result.u1.push([ dataPoint.epoch, dataPoint.u1 ]);
 			result.u2.push([ dataPoint.epoch, dataPoint.u2 ]);
-		}
+		});
 		var startEnd = getStartAndEnd(referenceDate);
 		result.soll.push([ startEnd[0].getTime(), tagesSoll ]);
 		result.soll.push([ startEnd[1].getTime(), tagesSoll ]);
