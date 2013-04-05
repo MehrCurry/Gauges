@@ -201,9 +201,8 @@ angular.module('monthChart', []).directive(
 						},
 						tooltip : {
 							formatter : function() {
-								return new Date(this.x)
-										.toString('yyyy-MM-dd hh:mm')
-										+ '</b> is <b>' + this.y + '</b>';
+								return new Date(this.x).toString()
+										+ '</b> is <b>' + Highcharts.numberFormat(this.y,1) + '</b>';
 							}
 						},
 						xAxis : {
