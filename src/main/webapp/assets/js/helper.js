@@ -24,3 +24,12 @@ function getDaysInMonth(iFullYear, iMonth) {
 	var iDaysInMonth = 32 - new Date(iFullYear, iMonth, 32).getDate();
 	return iDaysInMonth;
 }
+Date.prototype.isSameYear = function(aDate) {
+	return this.getFullYear() == aDate.getFullYear();
+}
+Date.prototype.isSameMonth = function(aDate) {
+	return this.getMonth() == aDate.getMonth();
+}
+Date.prototype.isSameYearAndMonth = function(aDate) {
+	return this.isSameYear(aDate) && this.isSameMonth(aDate);
+}

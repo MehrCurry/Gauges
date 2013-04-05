@@ -5,6 +5,9 @@ function SolarCtrl($scope, $timeout) {
 	$scope.aDate = new Date();
 	$scope.ac = 0;
 	$scope.ertrag = 0;
+	$scope.total = 0;
+	$scope.monthTotal=0;
+	$scope.yearTotal=0;
 	$scope.baseUrl = 'http://monitoring.norderstedt-energie.de/1064/';
 	$scope.data = {
 		ac : [],
@@ -83,6 +86,19 @@ function SolarCtrl($scope, $timeout) {
 						ertrag : $scope.currentData.ertrag,
 					});
 					$scope.$apply(function() {
+						$scope.total = _(data).reduce(function(memo, p) {
+							return memo + p.ertrag
+						}, 0) / 1000;
+						$scope.yearTotal = _(data).select(function(p){
+							return new Date(p.date).isSameYear(referenceDate)
+							}).reduce(function(memo, p) {
+							return memo + p.ertrag
+						}, 0) / 1000;
+						$scope.monthTotal = _(data).select(function(p){
+							return new Date(p.date).isSameYearAndMonth(referenceDate)
+							}).reduce(function(memo, p) {
+							return memo + p.ertrag
+						}, 0);
 						$scope.monthData = $scope.createMonthSeriesData(
 								referenceDate, data);
 					});

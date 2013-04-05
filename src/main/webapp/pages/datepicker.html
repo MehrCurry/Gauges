@@ -78,8 +78,14 @@ body {
 			<div class="span2">
 				<steel-series id="radial1" items="ertrag" options="{{ {maxValue:40,  titleString: 'Tagesertrag', unitString: 'kWh'} }}"></steel-series>
 			</div>
-			<div class="span2">
-				<steel-series id="radial2" items="ertrag" options="{{ {maxValue:600,  titleString: 'Monatsertrag', unitString: 'kWh'} }}"></steel-series>
+			<div class="span2" style="">
+				<steel-series id="radial2" items="monthTotal" options="{{ {maxValue:600,  titleString: 'Monatsertrag', unitString: 'kWh'} }}"></steel-series>
+			</div>
+			<div class="span2" style="">
+				<steel-series id="radial3" items="yearTotal" options="{{ {maxValue:5,  titleString: 'Jahresertrag', unitString: 'mWh'} }}"></steel-series>
+			</div>
+			<div class="span2" style="">
+				<steel-series id="radial4" items="total" options="{{ {maxValue:20,  titleString: 'Gesamtsertrag', unitString: 'mWh'} }}"></steel-series>
 			</div>
 		</div>
 		<footer>
