@@ -48,6 +48,14 @@ angular.module('steelSeries', []).directive('steelSeries', function() {
 		}
 	}
 });
+
+Highcharts.setOptions({
+	// This is for all plots, change Date axis to local timezone
+	global : {
+		useUTC : false
+	}
+});
+
 angular.module('dayChart', []).directive('dayChart', function() {
 	return {
 		restrict : 'E',
@@ -164,131 +172,132 @@ angular.module('dayChart', []).directive('dayChart', function() {
 		}
 	}
 });
-angular.module('monthChart', []).directive('monthChart', function() {
-	return {
-		restrict : 'E',
-		replace : true,
-		scope : {
-			items : '=',
-		},
-		controller : function($scope, $element, $attrs) {
-			console.log(2);
+angular.module('monthChart', []).directive(
+		'monthChart',
+		function() {
+			return {
+				restrict : 'E',
+				replace : true,
+				scope : {
+					items : '=',
+				},
+				controller : function($scope, $element, $attrs) {
+					console.log(2);
 
-		},
-		template : '<div style="margin: 0 auto">not working</div>',
-		link : function(scope, element, attrs) {
-			console.log(3);
-			if (scope.items == undefined)
-				return;
-			var options = {
-				chart : {
-					renderTo : attrs.id,
-					type : 'spline',
-					zoomType : 'x',
 				},
-				title : {
-					text : 'Monatsübersicht'
-				},
-				xAxis : {
-					type : 'datetime',
-					dateTimeLabelFormats : { // don't display
-						// the dummy
-						// year
-						month : '%e. %b',
-						year : '%b'
-					}
-				},
-				yAxis : [ { // --- Primary yAxis
-					title : {
-						text : 'Energie [kWh]'
-					},
-					min : 0,
-				}, {
-					title : {
-						text : 'Gesamt Energie [kWh]'
-					},
-					min : 0,
-					opposite : true
-
-				} ],
-				plotOptions : {
-					column : {
-						pointWidth : 40,
-						borderWidth : 1
-					},
-					areaspline : {
-						lineWidth : 2,
-						marker : {
-							enabled : false
+				template : '<div style="margin: 0 auto">not working</div>',
+				link : function(scope, element, attrs) {
+					console.log(3);
+					if (scope.items == undefined)
+						return;
+					var options = {
+						chart : {
+							renderTo : attrs.id,
+							type : 'column',
+							zoomType : 'x',
 						},
-						shadow : false,
-						states : {
-							hover : {
-								lineWidth : 1
+						title : {
+							text : 'Monatsübersicht'
+						},
+						tooltip : {
+							formatter : function() {
+								return new Date(this.x)
+										.toString('yyyy-MM-dd hh:mm')
+										+ '</b> is <b>' + this.y + '</b>';
 							}
 						},
-						threshold : null
-					},
-					spline : {
-						lineWidth : 2,
-						marker : {
-							enabled : false
+						xAxis : {
+							type : 'datetime',
 						},
-						shadow : false,
-						states : {
-							hover : {
-								lineWidth : 1
+						yAxis : [ { // --- Primary yAxis
+							title : {
+								text : 'Energie [kWh]'
+							},
+							min : 0,
+						}, {
+							title : {
+								text : 'Gesamt Energie [kWh]'
+							},
+							min : 0,
+							opposite : true
+
+						} ],
+						plotOptions : {
+							column : {},
+							areaspline : {
+								lineWidth : 2,
+								marker : {
+									enabled : false
+								},
+								shadow : false,
+								states : {
+									hover : {
+										lineWidth : 1
+									}
+								},
+								threshold : null
+							},
+							spline : {
+								lineWidth : 2,
+								marker : {
+									enabled : false
+								},
+								shadow : false,
+								states : {
+									hover : {
+										lineWidth : 1
+									}
+								},
+								threshold : null
 							}
 						},
-						threshold : null
-					}
-				},
-				series : [ {
-					yAxis : 0,
-					type : 'areaspline',
-					name : 'Ertrag [kWh]',
-					color : '#E0C000',
-					data : scope.items.ertrag
-				}, {
-					yAxis : 0,
-					type : 'spline',
-					dashStyle : 'Dash',
-					name : 'Tagessoll  [kWh]',
-					data : scope.items.soll
+						series : [ {
+							yAxis : 0,
+							type : 'area',
+							name : 'Ertrag [kWh]',
+							color : '#E0C000',
+							data : scope.items.ertrag
 
-				}, {
-					yAxis : 1,
-					type : 'spline',
-					dashStyle : 'Dash',
-					name : 'Monatsoll [kWh]',
-					data : scope.items.sollAuflaufend
-				}, {
-					yAxis : 1,
-					type : 'spline',
-					color : "#00B000",
-					name : 'Ertrag (cum.) [kWh]',
-					data : scope.items.cumulatedData
-				}, {
-					yAxis : 1,
-					type : 'spline',
-					color : "#00B000",
-					dashStyle : 'Dash',
-					name : 'Prognose [kWh]',
-					data : scope.items.prognose
-				} ]
-			};
-			var chart;
-			chart = new Highcharts.Chart(options);
+						}, {
+							yAxis : 0,
+							type : 'spline',
+							dashStyle : 'Dash',
+							name : 'Tagessoll [kWh]',
+							data : scope.items.soll
+						}, {
+							yAxis : 1,
+							type : 'spline',
+							dashStyle : 'Dash',
+							name : 'Monatsoll [kWh]',
+							data : scope.items.sollAuflaufend
+						}, {
+							yAxis : 1,
+							type : 'spline',
+							color : "#00B000",
+							name : 'Ertrag (cum.) [kWh]',
+							data : scope.items.cumulatedData
+						}, {
+							yAxis : 1,
+							type : 'spline',
+							color : "#00B000",
+							dashStyle : 'Dash',
+							name : 'Prognose [kWh]',
+							data : scope.items.prognose
 
-			scope.$watch("items", function(newValue) {
-				chart.series[0].setData(newValue.ertrag, true);
-				chart.series[1].setData(newValue.soll, true);
-				chart.series[2].setData(newValue.sollAuflaufend, true);
-				chart.series[3].setData(newValue.cumulatedData, true);
-				chart.series[4].setData(newValue.prognose, true);
-			});
-		}
-	}
-});
+						} ]
+					};
+					var chart;
+					chart = new Highcharts.Chart(options);
+
+					scope.$watch("items", function(newValue) {
+						chart.series[0].setData(newValue.ertrag, true);
+						chart.series[1].setData(newValue.soll, true);
+						chart.series[2].setData(newValue.sollAuflaufend, true);
+						chart.series[3].setData(newValue.cumulatedData, true);
+						chart.series[4].setData(newValue.prognose, true);
+					});
+				}
+			}
+		});
 angular.module('SolarApp', [ 'dayChart', 'monthChart', 'steelSeries',
 		'ui.directives' ]);
