@@ -9,6 +9,7 @@ function SolarCtrl($scope, $timeout) {
 	$scope.total = 0;
 	$scope.monthTotal=0;
 	$scope.yearTotal=0;
+	$scope.relativererTagesErtrag=0;
 	$scope.baseUrl = 'http://monitoring.norderstedt-energie.de/1064/';
 	$scope.data = {
 		ac : [],
@@ -74,6 +75,7 @@ function SolarCtrl($scope, $timeout) {
 				$scope.ac = $scope.currentData.ac/1000;
 				$scope.ertrag = $scope.currentData.ertrag;
 				$scope.spezifischerErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
+				$scope.relativererTagesErtrag=$scope.currentData.ertrag*100/$scope.tagesSoll;
 			});
 		});
 		da = new Array();
@@ -199,7 +201,7 @@ function SolarCtrl($scope, $timeout) {
 	$scope.createSeriesData = function(data) {
 		var result = {};
 		var referenceDate = new Date(data[0].epoch);
-		var tagesSoll = Math.round(SollYearKWP
+		var $scope.tagesSoll = Math.round(SollYearKWP
 				* AnlagenKWP
 				/ 10
 				* sollMonth[referenceDate.getMonth()]
@@ -222,8 +224,8 @@ function SolarCtrl($scope, $timeout) {
 			result.u2.push([ dataPoint.epoch, dataPoint.u2 ]);
 		});
 		var startEnd = getStartAndEnd(referenceDate);
-		result.soll.push([ startEnd[0].getTime(), tagesSoll ]);
-		result.soll.push([ startEnd[1].getTime(), tagesSoll ]);
+		result.soll.push([ startEnd[0].getTime(), $scope.tagesSoll ]);
+		result.soll.push([ startEnd[1].getTime(), $scope.tagesSoll ]);
 		return result;
 	}
 }
