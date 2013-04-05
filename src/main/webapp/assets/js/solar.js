@@ -1,10 +1,11 @@
 function SolarCtrl($scope, $timeout) {
 	var updateInterval = 10000;
 	var timer;
-	$scope.referenceDate = local2UTC(Date.today());
+	$scope.referenceDate = Date.today();
 	$scope.aDate = new Date();
 	$scope.ac = 0;
 	$scope.ertrag = 0;
+	$scope.spezifischerErtrag=0;
 	$scope.total = 0;
 	$scope.monthTotal=0;
 	$scope.yearTotal=0;
@@ -65,12 +66,14 @@ function SolarCtrl($scope, $timeout) {
 				$.getScript(baseUrl + dayFile), $.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(function() {
-			data = $scope.parseArray(m);
+			$scope.dayData = $scope.parseArray(m);
+			var values=_($scope.dayData).map(function(p){return [p.epoch,p.ertrag];});
 			$scope.$apply(function() {
-				$scope.data = $scope.createSeriesData(data);
-				$scope.currentData = data[data.length - 1];
-				$scope.ac = $scope.currentData.ac;
+				$scope.data = $scope.createSeriesData($scope.dayData);
+				$scope.currentData = _($scope.dayData).last();
+				$scope.ac = $scope.currentData.ac/1000;
 				$scope.ertrag = $scope.currentData.ertrag;
+				$scope.spezifischerErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
 			});
 		});
 		da = new Array();
