@@ -1,5 +1,5 @@
 function SolarCtrl($scope, $timeout) {
-	var updateInterval = 10000;
+	var updateInterval = 60000;
 	var timer;
 	$scope.referenceDate = Date.today();
 	$scope.aDate = new Date();
@@ -38,10 +38,18 @@ function SolarCtrl($scope, $timeout) {
 	}, {
 		name : 'Buck',
 		url : 'http://monitoring.norderstedt-energie.de/1063/'
+	}, {
+		name : 'Sommerfeld',
+		url : 'http://monitoring.norderstedt-energie.de/1053/'
 	} ];
 	$scope.$watch('aDate', function() {
 		console.log($scope.aDate);
 	});
+
+	$scope.$watch('baseUrl',function(newValue, oldValue){
+		$scope.onIimeout();
+	});
+
 	$scope.$watch('currentData', function() {
 		console.log("New data!");
 	});
