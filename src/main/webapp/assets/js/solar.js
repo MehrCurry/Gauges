@@ -72,6 +72,8 @@ function SolarCtrl($scope, $timeout) {
 				$.getScript(baseUrl + dayFile), $.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(function() {
+			$scope.anlage=$scope.copyGlobalDate();
+			$scope.tagesSoll=$scope.calculateDayTarget(referenceDate,$scope.anlage);
 			$scope.dayData = $scope.parseArray(m);
 			var values=_($scope.dayData).map(function(p){return [p.epoch,p.ertrag];});
 			$scope.$apply(function() {
@@ -79,6 +81,7 @@ function SolarCtrl($scope, $timeout) {
 				$scope.currentData = _($scope.dayData).last();
 				$scope.ac = $scope.currentData.ac/1000;
 				$scope.ertrag = $scope.currentData.ertrag;
+				$scope.relativererTagesErtrag = $scope.currentData.ertrag*100/$scope.tagesSoll;
 				$scope.spezifischerErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
 				$scope.relativererTagesErtrag=$scope.currentData.ertrag*100/$scope.tagesSoll;
 			});
@@ -114,6 +117,32 @@ function SolarCtrl($scope, $timeout) {
 					});
 				});
 		timer = $timeout($scope.onIimeout, updateInterval);
+	}
+	$scope.calculateDayTarget = function(aDate,anlage) {
+		return Math.round(anlage.sollYearKWP
+				* anlage.anlagenKWP
+				/ 10
+				* sollMonth[aDate.getMonth()]
+				/ (10000 * getDaysInMonth(aDate.getFullYear(),
+						aDate.getMonth())) * 10) / 10;
+	}
+	$scope.copyGlobalDate = function() {
+		return {
+			anlagenKWP: AnlagenKWP,
+			sollYearKWP: SollYearKWP,
+			sollMonth : sollMonth,
+			anzahlWR: AnzahlWR,
+			wRInfo: WRInfo,
+			hPTitel:HPTitel,
+			hPBetreiber:HPBetreiber,
+			hPEmail:HPEmail,
+			hPStandort:HPStandort,
+			hPModul:HPModul,
+			hPWR:HPWR,
+			hPLeistung:HPLeistung,
+			hPInbetrieb:HPInbetrieb,
+			hPAusricht:HPAusricht,
+		};
 	}
 	$scope.parseDaysHist = function(epoch, raw) {
 		var data = new Array();
