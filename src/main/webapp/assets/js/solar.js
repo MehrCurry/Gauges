@@ -38,9 +38,6 @@ function SolarCtrl($scope, $timeout) {
 	}, {
 		name : 'Buck',
 		url : 'http://monitoring.norderstedt-energie.de/1063/'
-	}, {
-		name : 'Sommerfeld',
-		url : 'http://monitoring.norderstedt-energie.de/1053/'
 	} ];
 	$scope.$watch('aDate', function() {
 		console.log($scope.aDate);
@@ -209,7 +206,7 @@ function SolarCtrl($scope, $timeout) {
 	$scope.createSeriesData = function(data) {
 		var result = {};
 		var referenceDate = new Date(data[0].epoch);
-		var $scope.tagesSoll = Math.round(SollYearKWP
+		var tagesSoll = Math.round(SollYearKWP
 				* AnlagenKWP
 				/ 10
 				* sollMonth[referenceDate.getMonth()]
@@ -232,8 +229,8 @@ function SolarCtrl($scope, $timeout) {
 			result.u2.push([ dataPoint.epoch, dataPoint.u2 ]);
 		});
 		var startEnd = getStartAndEnd(referenceDate);
-		result.soll.push([ startEnd[0].getTime(), $scope.tagesSoll ]);
-		result.soll.push([ startEnd[1].getTime(), $scope.tagesSoll ]);
+		result.soll.push([ startEnd[0].getTime(), tagesSoll ]);
+		result.soll.push([ startEnd[1].getTime(), tagesSoll ]);
 		return result;
 	}
 }
