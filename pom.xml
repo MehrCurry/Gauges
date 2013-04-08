@@ -18,7 +18,72 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/javascript</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
+			<plugin>
+				<groupId>com.github.searls</groupId>
+				<artifactId>jasmine-maven-plugin</artifactId>
+				<version>1.0.1-beta-6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generateManualRunner</goal>
+							<goal>resources</goal>
+							<goal>testResources</goal>
+							<goal>test</goal>
+							<goal>preparePackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<jsSrcDir>src/main/javascript</jsSrcDir>
+					<jsTestSrcDir>src/test/javascript</jsTestSrcDir>
+					<!-- <preloadSources> <preloadSource>lib/jquery-1.4.4.min.js</preloadSource> 
+						</preloadSources> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>yuicompressor-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>compress-js</id>
+						<goals>
+							<goal>compress</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<aggregations>
+						<aggregation>
+							<!-- remove files after aggregation (default: false) <removeIncluded>true</removeIncluded> -->
+							<!-- insert new line after each concatenation (default: false) -->
+							<insertNewLine>true</insertNewLine>
+							<output>${project.build.directory}/${project.build.finalName}.js</output>
+							<!-- files to include, path relative to output's directory or absolute 
+								path -->
+							<!--inputDir>base directory for non absolute includes, default to 
+								parent dir of output</inputDir -->
+							<includes>
+								<include>**/*.js</include>
+							</includes>
+							<!-- files to exclude, path relative to output's directory <excludes> 
+								<exclude>**/*.pack.js</exclude> <exclude>**/compressed.css</exclude> </excludes> -->
+						</aggregation>
+					</aggregations>
+					<excludes>
+						<exclude>assets/**/*.js</exclude>
+						<exclude>**/*.min.js</exclude>
+						<exclude>**/*-min.js</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -43,5 +108,63 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											net.alchim31.maven
+										</groupId>
+										<artifactId>
+											yuicompressor-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.1,)
+										</versionRange>
+										<goals>
+											<goal>compress</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>gr.abiss.mvn.plugins</groupId>
+				<artifactId>maven-jstools-plugin</artifactId>
+				<version>0.7</version>
+				<configuration>
+					<jsDir>src/main/javascript</jsDir>
+					<includePrivate>true</includePrivate>
+					<includeUndocumented>true</includeUndocumented>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>jslint</report>
+							<report>jsdoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

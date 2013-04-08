@@ -252,7 +252,7 @@ angular.module('monthChart', []).directive(
 						},
 						series : [ {
 							yAxis : 0,
-							type : 'area',
+							type : 'areaspline',
 							name : 'Ertrag [kWh]',
 							color : '#E0C000',
 							data : scope.items.ertrag
