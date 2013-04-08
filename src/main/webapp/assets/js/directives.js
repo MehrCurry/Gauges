@@ -79,7 +79,7 @@ angular.module('dayChart', []).directive('dayChart', function() {
 					zoomType : 'x',
 				},
 				title : {
-					text : scope.title,
+					text : 'Tagesübersicht',
 				},
 				xAxis : {
 					type : 'datetime',
