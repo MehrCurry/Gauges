@@ -79,7 +79,7 @@ angular.module('dayChart', []).directive('dayChart', function() {
 					zoomType : 'x',
 				},
 				title : {
-					text : scope.title,
+					text : 'Tagesübersicht',
 				},
 				xAxis : {
 					type : 'datetime',
@@ -252,7 +252,7 @@ angular.module('monthChart', []).directive(
 						},
 						series : [ {
 							yAxis : 0,
-							type : 'area',
+							type : 'areaspline',
 							name : 'Ertrag [kWh]',
 							color : '#E0C000',
 							data : scope.items.ertrag
