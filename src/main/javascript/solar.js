@@ -5,7 +5,9 @@ function SolarCtrl($scope, $timeout) {
 	$scope.aDate = new Date();
 	$scope.ac = 0;
 	$scope.ertrag = 0;
-	$scope.spezifischerErtrag=0;
+	$scope.spezifischerTagesErtrag=0;
+	$scope.spezifischerMonatsErtrag=0;
+	$scope.spezifischerJahresErtrag=0;
 	$scope.total = 0;
 	$scope.monthTotal=0;
 	$scope.yearTotal=0;
@@ -82,7 +84,7 @@ function SolarCtrl($scope, $timeout) {
 				$scope.ac = $scope.currentData.ac/1000;
 				$scope.ertrag = $scope.currentData.ertrag;
 				$scope.relativererTagesErtrag = $scope.currentData.ertrag*100/$scope.tagesSoll;
-				$scope.spezifischerErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
+				$scope.spezifischerTagesErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
 				$scope.relativererTagesErtrag=$scope.currentData.ertrag*100/$scope.tagesSoll;
 			});
 		});
@@ -107,11 +109,13 @@ function SolarCtrl($scope, $timeout) {
 							}).reduce(function(memo, p) {
 							return memo + p.ertrag
 						}, 0) / 1000;
+						$scope.spezifischerJahresErtrag=$scope.yearTotal/AnlagenKWP;
 						$scope.monthTotal = _(data).select(function(p){
 							return new Date(p.date).isSameYearAndMonth(referenceDate)
 							}).reduce(function(memo, p) {
 							return memo + p.ertrag
 						}, 0);
+						$scope.spezifischerMonatsErtrag=$scope.monthTotal/AnlagenKWP;
 						$scope.monthData = $scope.createMonthSeriesData(
 								referenceDate, data);
 					});
