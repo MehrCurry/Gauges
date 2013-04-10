@@ -7,6 +7,7 @@
 	<packaging>war</packaging>
 	<properties>
 		<jasmine-plugin-version>1.3.1.0</jasmine-plugin-version>
+		<jasmine.serverPort>12345</jasmine.serverPort>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -63,10 +64,14 @@
 			          </goals>
 			          <configuration>
 			      	    <keepServerAlive>true</keepServerAlive>
+						<sourceExcludes>
+						  <exclude>**/*.js</exclude>
+						</sourceExcludes>
 			          </configuration>
 			        </execution>
 			      </executions>
 			    </plugin>
+			<!--
 			    <plugin>
 			      <groupId>com.github.timurstrekalov</groupId>
 			      <artifactId>saga-maven-plugin</artifactId>
@@ -82,10 +87,11 @@
 			        <baseDir>http://localhost:${jasmine.serverPort}</baseDir>
 			        <outputDir>${project.build.directory}/coverage</outputDir>
 			        <noInstrumentPatterns>
-			          <pattern>.*/spec/.*</pattern> <!-- Don't instrument specs -->
+			          <pattern>.*/spec/.*</pattern>
 			        </noInstrumentPatterns>
 			      </configuration>
 			    </plugin>
+			-->
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
 				        <artifactId>yuicompressor-maven-plugin</artifactId>
