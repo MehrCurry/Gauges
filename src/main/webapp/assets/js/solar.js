@@ -38,7 +38,6 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 
 	$scope.currentData = {};
 
-	// update($scope.referenceDate,$scope.baseUrl);
 	$scope.selected = 0;
 	$scope.anlagen = [ {
 		name : 'Zockoll',
@@ -62,7 +61,6 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 	$scope.onIimeout = function() {
 		$scope.update($scope.referenceDate, $scope.baseUrl);
 	};
-	timer = $timeout($scope.onIimeout, 500);
 
 	$scope.update = function(referenceDate, baseUrl) {
 		console.log('Tick');
@@ -96,17 +94,20 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 		});
 		da = new Array();
 		dx = 0;
+		console.log('0size: ' + da.length);
 		$.when($.getScript(baseUrl + '/days_hist.js?nocache'),
 				$.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(
 				function() {
+					console.log('1size: ' + da.length);
 					data = $scope.parseDaysHist(referenceDate, da);
 					data.push({
 						date : referenceDate.getTime(),
 						ertrag : $scope.currentData.ertrag,
 					});
 					$scope.$apply(function() {
+						console.log('2size: ' + da.length);
 						$scope.total = _(data).reduce(function(memo, p) {
 							return memo + p.ertrag
 						}, 0) / 1000;
