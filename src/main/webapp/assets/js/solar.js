@@ -205,6 +205,7 @@ function SolarCtrl($scope, $timeout) {
 		return data;
 	}
 	$scope.createSeriesData = function(data) {
+        data.sort(sortDataByEpoach)
 		var result = {};
 		var referenceDate = new Date(data[0].epoch);
 		var tagesSoll = Math.round(SollYearKWP
@@ -234,4 +235,12 @@ function SolarCtrl($scope, $timeout) {
 		result.soll.push([ startEnd[1].getTime(), tagesSoll ]);
 		return result;
 	}
+
+    function sortDataByEpoach(a,b) {
+        if (a.epoch < b.epoch)
+            return -1;
+        else if (a.epoch > b.epoch)
+            return 1;
+        else return 0;
+    }
 }

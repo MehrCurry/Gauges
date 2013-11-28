@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" ng-app="SolarApp"><head>
+    <meta charset="utf-8">
+    <script src="../assets/js/jquery-1.9.1.js"></script>
+    <script src="../assets/js/underscore-min.js"></script>
+    <script src="../assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="http://code.highcharts.com/highcharts.src.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.src.js"></script>
+    <script src="../assets/js/angular.min.js"></script>
+    <script src="../assets/js/Date.js"></script>
+    <script src="../assets/angular-ui/build/angular-ui.js"></script>
+    <script src="../assets/js/tween-min.js"></script>
+    <script src="../assets/js/steelseries-min.js"></script>
+    <script src="../assets/js/directives.js"></script>
+    <script src="../assets/js/helper.js"></script>
+    <script src="../assets/js/solar.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+    <title>Sonnenfleck</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="../assets/css/solar.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+    </style>
+    <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="../assets/ico/favicon.png">
+</head>
+
+<body ng-controller="SolarCtrl">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <input ng-model="aDate" ui-date="">
+            <select ng-model="baseUrl" ng-options="item.url as item.name for item in anlagen"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <day-chart id="chart1" items="data"></day-chart>
+        </div>
+        <div class="col-md-6">
+            <month-chart id="chart2" items="monthData"></month-chart>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <steel-series class="radial" id="ac" items="ac" options="{{ {maxValue:10, titleString: 'AC Leistung', unitString: 'kW'} }}"></steel-series>
+            <steel-series class="radial" id="ertrag" items="ertrag" options="{{ {maxValue:40,  titleString: 'Tagesertrag', unitString: 'kWh'} }}"></steel-series>
+            <steel-series class="radial" id="monthTotal" items="monthTotal" options="{{ {maxValue:600,  titleString: 'Monatsertrag', unitString: 'kWh'} }}"></steel-series>
+        </div>
+        <div class="col-md-6">
+            <steel-series class="radial" id="yearTotal" items="yearTotal" options="{{ {maxValue:5,  titleString: 'Jahresertrag', unitString: 'mWh'} }}" ></steel-series>
+            <steel-series class="radial" id="total" items="total" options="{{ {maxValue:20,  titleString: 'Gesamtsertrag', unitString: 'mWh'} }}"></steel-series>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <steel-series class="radial" id="relativererTagesErtrag" items="relativererTagesErtrag" options="{{ {maxValue:200,  titleString: 'Releativ', unitString: '%'} }}"></steel-series>
+            <steel-series class="radial" id="spezifischerTagesErtrag" items="spezifischerTagesErtrag" options="{{ {maxValue:10,  titleString: 'Tagesertrag', unitString: 'Wh/Wp'} }}"></steel-series>
+            <steel-series class="radial" id="spezifischerMonatsErtrag" items="spezifischerMonatsErtrag" options="{{ {maxValue:1000,  titleString: 'Monatsertrag', unitString: 'Wh/Wp'} }}"></steel-series>
+        </div>
+        <div class="col-md-6">
+            <steel-series class="radial" id="spezifischerJahresErtrag" items="spezifischerJahresErtrag" options="{{ {maxValue:1200,  titleString: 'Jahresertrag', unitString: 'Wh/Wp'} }}"></steel-series>
+            <steel-series class="radial" id="spezifischerGesamtErtrag" items="spezifischerGesamtErtrag" options="{{ {maxValue:10,  titleString: 'Gesamtertrag', unitString: 'kWh/Wp'} }}"></steel-series>
+        </div>
+    </div>
+    <footer>
+        <p>© Guido Zockoll 2013</p>
+    </footer>
+</div>
+<!-- /container -->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+</body></html>
