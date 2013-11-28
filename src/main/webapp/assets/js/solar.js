@@ -9,6 +9,7 @@ function SolarCtrl($scope, $timeout) {
 	$scope.total = 0;
 	$scope.monthTotal=0;
 	$scope.yearTotal=0;
+	$scope.relativererTagesErtrag=0;
 	$scope.baseUrl = 'http://monitoring.norderstedt-energie.de/1064/';
 	$scope.data = {
 		ac : [],
@@ -37,9 +38,6 @@ function SolarCtrl($scope, $timeout) {
 	}, {
 		name : 'Buck',
 		url : 'http://monitoring.norderstedt-energie.de/1063/'
-	}, {
-		name : 'Sommerfeld',
-		url : 'http://monitoring.norderstedt-energie.de/1053/'
 	} ];
 	$scope.$watch('aDate', function() {
 		console.log($scope.aDate);
@@ -82,6 +80,7 @@ function SolarCtrl($scope, $timeout) {
 				$scope.ac = $scope.currentData.ac/1000;
 				$scope.ertrag = $scope.currentData.ertrag;
 				$scope.spezifischerErtrag=$scope.currentData.ertrag*1000/AnlagenKWP;
+				$scope.relativererTagesErtrag=$scope.currentData.ertrag*100/$scope.tagesSoll;
 			});
 		});
 		da = new Array();
