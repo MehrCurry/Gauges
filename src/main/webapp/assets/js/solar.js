@@ -16,7 +16,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 	if ($routeParams.anlage != null) {
 		
 	} else {
-		$scope.baseUrl = 'http://monitoring.norderstedt-energie.de/1064/';
+		$scope.baseUrl = 'http://home11.solarlog-web.de/6764.html?file=';
 		
 	}		
 	$scope.data = {
@@ -33,7 +33,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 		soll : [],
 		sollAuflaufend : [],
 		ertrag : [],
-		prognose : [],
+		prognose : []
 	};
 
 	$scope.currentData = {};
@@ -41,7 +41,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 	$scope.selected = 0;
 	$scope.anlagen = [ {
 		name : 'Zockoll',
-		url : 'http://monitoring.norderstedt-energie.de/1064/'
+		url : 'http://home11.solarlog-web.de/6764.html?file='
 	}, {
 		name : 'Buck',
 		url : 'http://monitoring.norderstedt-energie.de/1063/'
@@ -64,17 +64,17 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 
 	$scope.update = function(referenceDate, baseUrl) {
 		console.log('Tick');
-		m = new Array();
+		m = [];
 		mi = 0;
 		var data;
 		var dayFile;
 		if (Date.today().equals(referenceDate.clearTime())) {
-			dayFile = '/min_day.js?nocache';
+			dayFile = 'min_day.js';
 		} else {
-			dayFile = '/min' + referenceDate.clearTime().toString('yyMMdd')
-					+ '.js?nocache';
+			dayFile = 'min' + referenceDate.clearTime().toString('yyMMdd')
+					+ '.js';
 		}
-		$.when($.getScript(baseUrl + '/base_vars.js'),
+		$.when($.getScript(baseUrl + 'base_vars.js'),
 				$.getScript(baseUrl + dayFile), $.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(function() {
@@ -92,10 +92,10 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 				$scope.relativererTagesErtrag=$scope.currentData.ertrag*100/$scope.tagesSoll;
 			});
 		});
-		da = new Array();
+		da = [];
 		dx = 0;
 		console.log('0size: ' + da.length);
-		$.when($.getScript(baseUrl + '/days_hist.js?nocache'),
+		$.when($.getScript(baseUrl + 'days_hist.js'),
 				$.Deferred(function(deferred) {
 					$(deferred.resolve);
 				})).done(
@@ -104,7 +104,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 					data = $scope.parseDaysHist(referenceDate, da);
 					data.push({
 						date : referenceDate.getTime(),
-						ertrag : $scope.currentData.ertrag,
+						ertrag : $scope.currentData.ertrag
 					});
 					$scope.$apply(function() {
 						console.log('2size: ' + da.length);
@@ -129,7 +129,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 					});
 				});
 		timer = $timeout($scope.onIimeout, updateInterval);
-	}
+	};
 	$scope.calculateDayTarget = function(aDate,anlage) {
 		return Math.round(anlage.sollYearKWP
 				* anlage.anlagenKWP
@@ -137,7 +137,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 				* sollMonth[aDate.getMonth()]
 				/ (10000 * getDaysInMonth(aDate.getFullYear(),
 						aDate.getMonth())) * 10) / 10;
-	}
+	};
 	$scope.copyGlobalDate = function() {
 		return {
 			anlagenKWP: AnlagenKWP,
@@ -153,11 +153,11 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			hPWR:HPWR,
 			hPLeistung:HPLeistung,
 			hPInbetrieb:HPInbetrieb,
-			hPAusricht:HPAusricht,
+			hPAusricht:HPAusricht
 		};
-	}
+	};
 	$scope.parseDaysHist = function(epoch, raw) {
-		var data = new Array();
+		var data = [];
 		for (i = dx - 1; i >= 0; i--) {
 			var parts = da[i].split('|');
 			var date = dateFromString(parts[0] + " 00:00:00");
@@ -166,12 +166,12 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			var dataPoint = {
 				date : date,
 				ertrag : parseFloat(values[0] / 1000.0),
-				max : parseFloat(values[1]),
+				max : parseFloat(values[1])
 			};
 			data.push(dataPoint);
 		}
 		return data;
-	}
+	};
 	$scope.createMonthSeriesData = function(epoch, raw) {
 		var result = {
 			cumulatedData : [],
@@ -224,9 +224,9 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			result.sollAuflaufend.push([ day.getTime(), sum ]);
 		}
 		return result;
-	}
+	};
 	$scope.parseArray = function(raw) {
-		var data = new Array();
+		var data = [];
 		_.each(raw.reverse(), function(line) {
 			var parts = line.split('|');
 			var epoch = dateFromString(parts[0]);
@@ -243,7 +243,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			data.push(dataPoint);
 		});
 		return data;
-	}
+	};
 	$scope.createSeriesData = function(data) {
 		var result = {};
 		var referenceDate = new Date(data[0].epoch);
@@ -253,14 +253,14 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 				* sollMonth[referenceDate.getMonth()]
 				/ (10000 * getDaysInMonth(referenceDate.getFullYear(),
 						referenceDate.getMonth())) * 10) / 10;
-		result.ac = new Array();
-		result.dc1 = new Array();
-		result.dc2 = new Array();
-		result.ertrag = new Array();
-		result.u1 = new Array();
-		result.u2 = new Array();
-		result.temp = new Array();
-		result.soll = new Array();
+		result.ac = [];
+		result.dc1 = [];
+		result.dc2 = [];
+		result.ertrag = [];
+		result.u1 = [];
+		result.u2 = [];
+		result.temp = [];
+		result.soll = [];
 		_.each(data, function(dataPoint) {
 			result.ac.push([ dataPoint.epoch, dataPoint.ac ]);
 			result.dc1.push([ dataPoint.epoch, dataPoint.dc1 ]);
