@@ -6,7 +6,6 @@
 <script src="../assets/lib/jquery/jquery-1.9.1.js"></script>
 <script src="../assets/lib/underscore/underscore-min.js"></script>
 <script src="../assets/lib/bootstrap/bootstrap.js"></script>
-<script src="../assets/lib/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <script src="../assets/lib/angular/angular.min.js"></script>
@@ -60,7 +59,7 @@ body {
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span2">
-				<input ng-model="aDate" ui-date>
+				<input type="date" ng-model="aDate">
 				<select ng-model="baseUrl" ng-options="item.url as item.name for item in anlagen"></select>
 			</div>
 		</div>

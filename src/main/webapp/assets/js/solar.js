@@ -1,8 +1,8 @@
-function SolarCtrl($scope, $timeout, $routeParams) {
+function SolarCtrl($scope, $filter, $timeout, $routeParams) {
 	var updateInterval = 60000;
 	var timer;
 	$scope.referenceDate = Date.today();
-	$scope.aDate = new Date();
+	$scope.aDate = $filter('date')(new Date(),'MM/dd/yyyy');
 	$scope.ac = 0;
 	$scope.ertrag = 0;
 	$scope.spezifischerTagesErtrag=0;
@@ -17,7 +17,6 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 		
 	} else {
 		$scope.baseUrl = 'http://home11.solarlog-web.de/6764.html?file=';
-		
 	}		
 	$scope.data = {
 		ac : [],
@@ -47,6 +46,8 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 		url : 'http://monitoring.norderstedt-energie.de/1063/'
 	} ];
 	$scope.$watch('aDate', function() {
+        $scope.referenceDate=Date.parse($scope.aDate)
+        $scope.update($scope.referenceDate,$scope.baseUrl);
 		console.log($scope.aDate);
 	});
 
@@ -102,10 +103,10 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 				function() {
 					console.log('1size: ' + da.length);
 					data = $scope.parseDaysHist(referenceDate, da);
-					data.push({
+					/* data.push({
 						date : referenceDate.getTime(),
 						ertrag : $scope.currentData.ertrag
-					});
+					}); */
 					$scope.$apply(function() {
 						console.log('2size: ' + da.length);
 						$scope.total = _(data).reduce(function(memo, p) {
@@ -128,7 +129,8 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 								referenceDate, data);
 					});
 				});
-		timer = $timeout($scope.onIimeout, updateInterval);
+        if (referenceDate.equals(Date.today()))
+		    timer = $timeout($scope.onIimeout, updateInterval);
 	};
 	$scope.calculateDayTarget = function(aDate,anlage) {
 		return Math.round(anlage.sollYearKWP
@@ -165,6 +167,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			var values = parts[1].split(';');
 			var dataPoint = {
 				date : date,
+                ref: ref,
 				ertrag : parseFloat(values[0] / 1000.0),
 				max : parseFloat(values[1])
 			};
@@ -202,7 +205,7 @@ function SolarCtrl($scope, $timeout, $routeParams) {
 			cumulated += dataPoint.ertrag;
 			result.max.push([ dataPoint.date, dataPoint.max ]);
 			result.cumulatedData.push([ dataPoint.date, cumulated ]);
-			result.ertrag.push([ dataPoint.date, dataPoint.ertrag ]);
+			result.ertrag.push([ dataPoint.date, dataPoint.ertrag, dataPoint.ref ]);
 			count++;
 		});
 		var aDate = new Date(epoch);
