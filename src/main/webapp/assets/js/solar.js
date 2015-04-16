@@ -139,8 +139,11 @@ function SolarCtrl($scope, $filter, $timeout, $routeParams) {
                 alert(arguments[2].toString());
             }
         });
-        if (referenceDate.equals(Date.today()))
+        if (referenceDate.equals(Date.today())) {
+            if (timer!=null)
+                $timeout.cancel(timer);
             timer = $timeout($scope.onIimeout, updateInterval);
+        }
     };
     $scope.calculateDayTarget = function (aDate, anlage) {
         return Math.round(anlage.sollYearKWP
