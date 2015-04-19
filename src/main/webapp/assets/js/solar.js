@@ -43,7 +43,7 @@ function SolarCtrl($scope, $filter, $timeout, $routeParams) {
         url: 'http://home11.solarlog-web.de/6764.html?file='
     }, {
         name: 'Buck',
-        url: 'http://monitoring.norderstedt-energie.de/1063/'
+        url: 'http://home11.solarlog-web.de/9102.html?file='
     }];
     $scope.$watch('aDate', function () {
         $scope.referenceDate = Date.parse($scope.aDate)
