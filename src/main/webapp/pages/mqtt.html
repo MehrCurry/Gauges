@@ -5,14 +5,14 @@
 <canvas id=gaugeCanvas1 width=200 height=200>No canvas in your browser...sorry...</canvas>
 <canvas id=gaugeCanvas2 width=200 height=200>No canvas in your browser...sorry...</canvas>
 </body>
-<script type="text/javascript" src="http://mosquitto.org/js/mosquitto-1.1.js"></script>
+<script type="text/javascript" src="http://git.eclipse.org/c/paho/org.eclipse.paho.mqtt.javascript.git/plain/src/mqttws31.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type=text/javascript src=http://dl.dropbox.com/u/128855213/SteelSeries/tween-min.js></script>
-<script type=text/javascript src=http://dl.dropbox.com/u/128855213/SteelSeries/steelseries-min.js></script>
+<script type=text/javascript src="http://dl.dropbox.com/u/128855213/SteelSeries/tween-min.js"></script>
+<script type=text/javascript src="http://dl.dropbox.com/u/128855213/SteelSeries/steelseries-min.js"></script>
 <script>
     var momentanGauge;
     var tagGauge;
-    var mosq = new Mosquitto();
+    var mosq;
 
     function init()
     { // from @bordignons Sep 2013
@@ -57,34 +57,31 @@
         tagGauge.setValue('');
     }
 
+    mosq = new Paho.MQTT.Client("docker", 8080, "clientId");
 
-    mosq.onmessage = onMessage;
-    mosq.ondisconnect = onDisconnect;
+    mosq.onMessageArrived = onMessage;
+    mosq.onConnectionLost = onDisconnect;
 
-    mosq.onconnect = function(rc) {
-        //console.log("mqtt connected");
+    mosq.connect({onSuccess:onConnect});
+
+    function onConnect() {
+        console.log("mqtt connected");
         //add your topic that you want to subscribe to here, currently set to all topics #
         mosq.subscribe('#', 0);
     };
 
-    var url = 'ws://docker:8080/piko/wr/momentan';
-    // var url = 'ws://' + location.host + ":" + location.port + '/mqtt';
-    //console.log(url);
-    mosq.connect(url);
-
-    function onMessage(topic, payload, qos) {
+    function onMessage(msg) {
         //console.log(topic + " - " + payload);
-        var data=JSON.parse(payload);
-        if (topic == "piko/wr/momentan") {
+        var data=JSON.parse(msg.payloadString);
+        if (msg.destinationName == "piko/wr/momentan") {
             momentanGauge.setValue(data.val / 1000);
         }
-        if (topic == "piko/wr/tag") {
+        if (msg.destinationName == "piko/wr/tag") {
             tagGauge.setValue(data.val);
         }
     }
 
-    function onDisconnect(reason) {
-        //console.log("disconnected");
+    function onDisconnect() {
         alert("disconnected");
     }
 
